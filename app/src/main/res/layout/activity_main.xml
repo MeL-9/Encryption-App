@@ -1,0 +1,153 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/titleTheme"
+        android:text="@string/cipher" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_cipher"
+            android:textColor="#000"></TextView>
+
+
+        <EditText
+            android:id="@+id/et_str"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="#E0E0F8"
+            android:inputType="text"
+            android:textSize="20dp"
+            android:hint="@string/hint_hiragana"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/n_kaeji"
+                android:background="#E0E0F8"
+                android:inputType="number"
+                android:hint="@string/hint_kaeji"
+                android:visibility="gone"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    style="@style/morsePutButton"
+                    android:id="@+id/bt_put_short"
+                    android:text="@string/short_point"/>
+
+                <Button
+                    style="@style/morsePutButton"
+                    android:id="@+id/bt_put_long"
+                    android:text="@string/long_point" />
+
+                <Button
+                    style="@style/morsePutButton"
+                    android:id="@+id/bt_put_space"
+                    android:text="@string/space"/>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_encry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:elevation="20dp"
+            android:text="@string/encrypt" />
+
+        <Button
+            android:id="@+id/bt_decry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/decrypt"/>
+        <Button
+            android:id="@+id/bt_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="@string/clear" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <TextView
+                android:id="@+id/tv_crypt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#070707"
+                android:textSize="20dp" />
+
+
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/bt_cpy"
+                android:text="@string/copy_clip"
+                android:visibility="gone"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/bt_fil"
+                android:text="@string/fillin_ue"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

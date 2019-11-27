@@ -1,0 +1,33 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="titleTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">30dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">20dp</item>
+        <item name="android:textColor">#FFF</item>
+        <item name="android:textSize">36dp</item>
+
+    </style>
+
+    <style name="morsePutButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:background">@color/colorButtonBackground</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+</resources>
