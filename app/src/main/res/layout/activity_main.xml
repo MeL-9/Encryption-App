@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#F1F0F0">
 
     <TextView
         style="@style/titleTheme"
@@ -27,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:background="#E0E0F8"
+            android:background="#D9EEFF"
             android:inputType="text"
             android:textSize="20dp"
             android:hint="@string/hint_hiragana"/>
@@ -114,7 +115,7 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="170dp">
 
             <TextView
                 android:id="@+id/tv_crypt"

@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ShowMorseCode"></activity>
+        <activity android:name=".ShowHistory"></activity>
     </application>
 
 </manifest>
