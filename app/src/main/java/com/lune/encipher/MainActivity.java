@@ -27,12 +27,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView tvCrypt;
     private AlertDialog.Builder dlg;
 
-    private String plainStr;
+    private String plainStr, cryptStr;
     private Toast tst;
 
     private int idEncry = R.id.bt_encry, idDecry = R.id.bt_decry, idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
             idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,
             idClear = R.id.bt_clear;
+
+    private ArrayList<String> arrayHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -66,6 +68,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
         tst.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+
+        arrayHistory = new ArrayList<String>(){{
+                add("変換履歴");
+            }
+        };
 
         //Spinnerに使うAdapterの作成
         ArrayAdapter adptEncry = new ArrayAdapter(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.list_encry));
@@ -136,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             case R.id.menu_history:
                 intent = new Intent(this, ShowHistory.class);
+                intent.putExtra("com.lune.encipher.arrayHistory", arrayHistory);
                 startActivity(intent);
         }
         return true;
@@ -149,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             plainStr = etStr.getText().toString();    //入力された文字列を取得
             int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
 
-            if(item == 0){  //換字式なら
+            if(item == 0){      //換字式なら
                 if(plainStr.equals("") && etN.getText().toString().equals("")) {                //入力と鍵がないなら
 //                    tvCrypt.setText(R.string.noStringAndKey);
                     tst.setText(R.string.noStringAndKey);
@@ -167,14 +175,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Kaeji kj = new Kaeji(plainStr, 0, key);
                     kj.encry();
                     tvCrypt.setTextSize(20);
-                    tvCrypt.setText(kj.outPut());
+                    cryptStr = kj.outPut();
+                    tvCrypt.setText(cryptStr);
                     tvFadein(tvCrypt);
+                    arrayHistory.add(plainStr + "→" + cryptStr);
 //                tvCrypt.setText(kaeji(plainStr, mode));
                     btCpy.setVisibility(View.VISIBLE);
                     btFil.setVisibility(View.VISIBLE);
                 }
             }
-            else if(item == 1) {    //モールス信号なら
+            else if(item == 1) {        //モールス信号なら
                 if(plainStr.equals("")) {                 //入力がないなら
 //                    tvCrypt.setText(R.string.noString);
                     tst.setText(R.string.noString);
@@ -183,8 +193,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Morse morse = new Morse(plainStr, 0);
                     morse.encry();
                     tvCrypt.setTextSize(14);
-                    tvCrypt.setText(morse.outPut());
+                    cryptStr = morse.outPut();
+                    tvCrypt.setText(cryptStr);
                     tvFadein(tvCrypt);
+                    arrayHistory.add(plainStr + "→" + cryptStr);
                     btCpy.setVisibility(View.VISIBLE);
                     btFil.setVisibility(View.VISIBLE);
                 }
@@ -194,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             plainStr = etStr.getText().toString();    //入力された文字列を取得
             int item = spnrEncry.getSelectedItemPosition();
 
-            if(item == 0){
+            if(item == 0){      //換字式なら
                 if(plainStr.equals("") && etN.getText().toString().equals("")) {        //入力と鍵がないなら
 //                    tvCrypt.setText((R.string.noStringAndKey));
                     tst.setText(R.string.noStringAndKey);
@@ -212,14 +224,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Kaeji kj = new Kaeji(plainStr, 1, key);
                     kj.encry();
                     tvCrypt.setTextSize(20);
-                    tvCrypt.setText(kj.outPut());
+                    cryptStr = kj.outPut();
+                    tvCrypt.setText(cryptStr);
                     tvFadein(tvCrypt);
+                    arrayHistory.add(plainStr + "→" + cryptStr);
 //                tvCrypt.setText(kaeji(plainStr, mode));
                     btCpy.setVisibility(View.VISIBLE);
                     btFil.setVisibility(View.VISIBLE);
                 }
             }
-            else if(item == 1) {
+            else if(item == 1) {        //モールス信号なら
                 if(plainStr.equals("")) {                 //入力がないなら
 //                    tvCrypt.setText(R.string.noMorse);
                     tst.setText(R.string.noMorse);
@@ -228,8 +242,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Morse morse = new Morse(plainStr, 1);
                     morse.encry();
                     tvCrypt.setTextSize(20);
-                    tvCrypt.setText(morse.outPut());
+                    cryptStr = morse.outPut();
+                    tvCrypt.setText(cryptStr);
                     tvFadein(tvCrypt);
+                    arrayHistory.add(plainStr + "→" + cryptStr);
                     btCpy.setVisibility(View.VISIBLE);
                     btFil.setVisibility(View.VISIBLE);
                 }
