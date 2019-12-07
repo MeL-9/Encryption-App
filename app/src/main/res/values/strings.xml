@@ -28,7 +28,7 @@
     <string name="hiragana">ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ
                             ただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽ
                             まみむめもゃやゅゆょよらりるれろゎわゐゑをん</string>
-    <string name="about_morse">小文字のモールス符号について</string>
+    <string name="about_morse">ひらがな小文字のモールス符号について</string>
     <string name="explain_morse">小文字のひらがなは大文字の符号のあとに半角スペースを挟み半濁点の符号(・・－－・)を打ちます</string>
     <string name="list_code">モールス符号表</string>
     <string name="history">変換履歴</string>

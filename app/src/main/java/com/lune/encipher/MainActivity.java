@@ -100,14 +100,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable s) {
                 plainStr = s.toString();
-                if(plainStr.equals(""))return;
+                if(plainStr.equals("")){
+                    cross.startAnimation(fadeOut);
+                    resultLayout.startAnimation(fadeOut);
+                    flgCross = flgResult = false;
+                    return;
+                }
                 if(plainStr.length() >= 1 && flgCross == false){    //文字が入力されていればクリアボタンの表示をする
                     cross.startAnimation(fadeIn);
                     flgCross = true;
                 }
                 int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
 
-                if(item == 0)  {        //換字式なら
+                if(item == 1)  {        //換字式なら
                     switch (radioMode.getCheckedRadioButtonId()){       //ラジオボタンで動作を確定
                         case R.id.radioEncry:     //暗号化が選ばれているなら
                             if(etN.getText().toString().equals("")){        //鍵が空欄なら
@@ -125,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     resultLayout.startAnimation(fadeIn);
                                     flgResult = true;
                                 }
-                                tvCrypt.startAnimation(fadeIn);     //結果をFadeIn
+//                                tvCrypt.startAnimation(fadeIn);     //結果をFadeIn
                                 arrayHistory.add(plainStr + "→" + cryptStr);    //履歴用のArrayListにadd
 //                                btCpy.setVisibility(View.VISIBLE);        //コピーと上に入れるボタンを表示 -> 結果フレームごと隠すようにしたため不要
 //                                btFil.setVisibility(View.VISIBLE);
@@ -148,12 +153,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     resultLayout.startAnimation(fadeIn);
                                     flgResult = true;
                                 }
-                                tvCrypt.startAnimation(fadeIn);
+//                                tvCrypt.startAnimation(fadeIn);
                                 arrayHistory.add(plainStr + "→" + cryptStr);
                                 break;
                             }
                     }
-                }else{          //モールス信号なら
+                }else if(item == 0){          //モールス信号なら
                     switch (radioMode.getCheckedRadioButtonId()){
                         case R.id.radioEncry:     //暗号化が選ばれているなら
                             Morse morse = new Morse(plainStr, 0);
@@ -165,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
-                            tvCrypt.startAnimation(fadeIn);
+//                            tvCrypt.startAnimation(fadeIn);
                             arrayHistory.add(plainStr + "→" + cryptStr);
                             break;
 
@@ -179,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
-                            tvCrypt.startAnimation(fadeIn);
+//                            tvCrypt.startAnimation(fadeIn);
                             arrayHistory.add(plainStr + "→" + cryptStr);
                             break;
                     }
@@ -234,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
                 Spinner spnr = (Spinner)parent;
                 int num = spnr.getSelectedItemPosition();
-                if(num == 0){
+                if(num == 1){
                     linearLayout = findViewById(R.id.key_kaeji);
                     linearLayout.setVisibility(View.VISIBLE);    //換字式が選ばれているならずらす数のEditTextをVisible
                 }
@@ -243,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     linearLayout.setVisibility(View.GONE);
                 }
 
-                if(num == 1){
+                if(num == 0){
                     linearLayout = findViewById(R.id.putMorse);
                     linearLayout.setVisibility(View.VISIBLE);
                 }else{
@@ -260,10 +265,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
     }
-    public void clearCross(View v){
+    public void clearCross(View v){     //×を押したときの処理
         resultLayout = findViewById(R.id.result);
         etStr.setText("");
-        etN.setText("");
+//        etN.setText("");
         tvCrypt.setText("");
         resultLayout.startAnimation(fadeOut);
         cross.startAnimation(fadeOut);
@@ -546,6 +551,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if(mode == 0){     //暗号化なら
                 for(int i = 0; i < plainStr.length(); i++){    //文字列の長さ分ループ
                     tmp = plainStr.charAt(i);   //文字列を1文字ずつチェックする
+                    if(tmp >= 'ァ' && tmp <= 'ン')tmp -= 96;       //見ている文字がカタカナならひらがなへ変換
+                    if(tmp == 'ー'){
+                        crypt.append(listMorses.get(83).toString() + " ");
+                        continue;
+                    }
                     if(Character.UnicodeBlock.of(tmp) == Character.UnicodeBlock.HIRAGANA) {     //見ている文字がひらがななら
                         index = tmp - 'ぁ';      //tmpが何番目の文字なのか
                         afterConverting = listMorses.get(index).toString();     //コードリストのindex番目を代入
@@ -569,7 +579,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }else if(tmp == ' '){          //' 'ならリストに追加する
                         strMorses.add(check.toString());
                         check.setLength(0);     //checkの中身をクリア
-
                     }
                 }
                 strMorses.add(check.toString());        //文のリストに追加
@@ -585,7 +594,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             crypt.append("不適切な値");
                             return;
                         }
-
                     }
                 }
                 for(String str: strMorses){
