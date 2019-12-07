@@ -9,6 +9,8 @@ import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,50 +26,197 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btEncry, btDecry, btClear, btCpy, btFil, btShortPoint, btLongPoint, btSpace;
     private EditText etStr, etN;
     private Spinner spnrEncry;
-    private TextView tvCrypt;
+    private TextView tvCrypt, cross;
     private AlertDialog.Builder dlg;
 
     private String plainStr, cryptStr;
+    private RadioGroup radioMode;
+    private AlphaAnimation fadeIn, fadeOut;
     private Toast tst;
+    private LinearLayout linearLayout, resultLayout;
 
-    private int idEncry = R.id.bt_encry, idDecry = R.id.bt_decry, idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
-            idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,
-            idClear = R.id.bt_clear;
+//    private int idEncry = R.id.bt_encry, idDecry = R.id.bt_decry, idClear = R.id.bt_clear;    //暗号化、復号、クリアボタンは廃止
+    private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
+            idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space;
 
     private ArrayList<String> arrayHistory;
+    private boolean flgCross, flgResult;    //表示非表示を切り替える要素のためのフラグ
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btEncry = findViewById(idEncry);
-        btDecry = findViewById(idDecry);
-        btClear = findViewById(idClear);
+//        btEncry = findViewById(idEncry);
+//        btDecry = findViewById(idDecry);
+//        btClear = findViewById(idClear);
         btCpy = findViewById(idCpy);
         btFil = findViewById(idFil);
         btShortPoint = findViewById(idShortpoint);
         btLongPoint = findViewById(idLongPoint);
         btSpace  = findViewById(idSpace);
+        etStr = findViewById(R.id.et_str);
+        etN = findViewById(R.id.n_kaeji);
+        spnrEncry = findViewById(R.id.spinner);
+        tvCrypt = findViewById(R.id.tv_crypt);
+        cross = findViewById(R.id.cross);
+        radioMode = findViewById(R.id.radioMode);
 
-        btEncry.setOnClickListener(this);
-        btDecry.setOnClickListener(this);
-        btClear.setOnClickListener(this);
+//        btEncry.setOnClickListener(this);
+//        btDecry.setOnClickListener(this);
+//        btClear.setOnClickListener(this);
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
         btShortPoint.setOnClickListener(this);
         btLongPoint.setOnClickListener(this);
         btSpace.setOnClickListener(this);
 
-        etStr = findViewById(R.id.et_str);
-        etN = findViewById(R.id.n_kaeji);
-        spnrEncry = findViewById(R.id.spinner);
-        tvCrypt = findViewById(R.id.tv_crypt);
+        fadeIn = new AlphaAnimation(0.0f, 1.0f);        //FadeInとFadeOutのアニメーション設定
+        fadeIn.setDuration(300);
+        fadeIn.setFillAfter(true);
+        fadeOut = new AlphaAnimation(1.0f, 0.0f);
+        fadeOut.setDuration(10);
+        fadeOut.setFillAfter(true);
 
-        dlg = new AlertDialog.Builder(this);
+        cross.startAnimation(fadeOut);
+        resultLayout = findViewById(R.id.result);
+        resultLayout.startAnimation(fadeOut);
+        fadeOut.setDuration(300);
+
+        flgCross = flgResult = false;
+
+        radioMode.check(R.id.radioEncry);
 
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
         tst.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+
+        etStr.addTextChangedListener(new TextWatcher() {         //入力欄の変更を監視するリスナを追加
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                plainStr = s.toString();
+                if(plainStr.equals(""))return;
+                if(plainStr.length() >= 1 && flgCross == false){    //文字が入力されていればクリアボタンの表示をする
+                    cross.startAnimation(fadeIn);
+                    flgCross = true;
+                }
+                int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
+
+                if(item == 0)  {        //換字式なら
+                    switch (radioMode.getCheckedRadioButtonId()){       //ラジオボタンで動作を確定
+                        case R.id.radioEncry:     //暗号化が選ばれているなら
+                            if(etN.getText().toString().equals("")){        //鍵が空欄なら
+                                tst.setText(R.string.noKey);
+                                tst.show();
+                                break;
+                            }else{
+                                int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
+                                Kaeji kj = new Kaeji(plainStr, key, 0);     //暗号化するメソッドを持つクラスを定義
+                                kj.encry();         //暗号化メソッド実行
+                                tvCrypt.setTextSize(20);
+                                cryptStr = kj.outPut();     //暗号化結果を取得
+                                tvCrypt.setText(cryptStr);      //結果をTexiViewにセット
+                                if(flgResult == false){     //結果フレームが表示されていなければFadeInさせる
+                                    resultLayout.startAnimation(fadeIn);
+                                    flgResult = true;
+                                }
+                                tvCrypt.startAnimation(fadeIn);     //結果をFadeIn
+                                arrayHistory.add(plainStr + "→" + cryptStr);    //履歴用のArrayListにadd
+//                                btCpy.setVisibility(View.VISIBLE);        //コピーと上に入れるボタンを表示 -> 結果フレームごと隠すようにしたため不要
+//                                btFil.setVisibility(View.VISIBLE);
+                                break;
+                            }
+
+                        case R.id.radioDecry:     //復号が選ばれているなら
+                            if(etN.getText().toString().equals("")){
+                                tst.setText(R.string.noKey);
+                                tst.show();
+                                break;
+                            }else{
+                                int key = Integer.parseInt(etN.getText().toString());
+                                Kaeji kj = new Kaeji(plainStr, key, 1);
+                                kj.encry();
+                                tvCrypt.setTextSize(20);
+                                cryptStr = kj.outPut();
+                                tvCrypt.setText(cryptStr);
+                                if(flgResult == false){
+                                    resultLayout.startAnimation(fadeIn);
+                                    flgResult = true;
+                                }
+                                tvCrypt.startAnimation(fadeIn);
+                                arrayHistory.add(plainStr + "→" + cryptStr);
+                                break;
+                            }
+                    }
+                }else{          //モールス信号なら
+                    switch (radioMode.getCheckedRadioButtonId()){
+                        case R.id.radioEncry:     //暗号化が選ばれているなら
+                            Morse morse = new Morse(plainStr, 0);
+                            morse.encry();
+                            tvCrypt.setTextSize(14);        //モールス符号用にサイズを変更
+                            cryptStr = morse.outPut();
+                            tvCrypt.setText(cryptStr);
+                            if(flgResult == false){
+                                resultLayout.startAnimation(fadeIn);
+                                flgResult = true;
+                            }
+                            tvCrypt.startAnimation(fadeIn);
+                            arrayHistory.add(plainStr + "→" + cryptStr);
+                            break;
+
+                        case R.id.radioDecry:     //復号が選ばれているなら
+                            morse = new Morse(plainStr, 1);
+                            morse.encry();
+                            tvCrypt.setTextSize(20);
+                            cryptStr = morse.outPut();
+                            tvCrypt.setText(cryptStr);
+                            if(flgResult == false){
+                                resultLayout.startAnimation(fadeIn);
+                                flgResult = true;
+                            }
+                            tvCrypt.startAnimation(fadeIn);
+                            arrayHistory.add(plainStr + "→" + cryptStr);
+                            break;
+                    }
+                }
+                return;
+            }
+        });
+        etN.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() >= 10){
+                    tst.setText(R.string.over);
+                    tst.show();
+                }else{      //鍵が変更されたら文字列を変化させる
+                    String tmp = etStr.getText().toString();
+                    etStr.setText("");
+                    etStr.setText(tmp);
+                }
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        radioMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {     //ラジオグループの変更を監視するリスナを設定
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                String tmp = etStr.getText().toString();
+                etStr.setText("");
+                etStr.setText(tmp);
+            }
+        });
+
+
+        dlg = new AlertDialog.Builder(this);
 
         arrayHistory = new ArrayList<String>(){{
                 add("変換履歴");
@@ -85,25 +234,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
                 Spinner spnr = (Spinner)parent;
                 int num = spnr.getSelectedItemPosition();
-
-                if(num == 0)etN.setVisibility(View.VISIBLE);    //換字式が選ばれているならずらす数のEditTextをVisible
-                else etN.setVisibility(View.GONE);
+                if(num == 0){
+                    linearLayout = findViewById(R.id.key_kaeji);
+                    linearLayout.setVisibility(View.VISIBLE);    //換字式が選ばれているならずらす数のEditTextをVisible
+                }
+                else {
+                    linearLayout = findViewById(R.id.key_kaeji);
+                    linearLayout.setVisibility(View.GONE);
+                }
 
                 if(num == 1){
-                    btShortPoint.setVisibility(View.VISIBLE);
-                    btLongPoint.setVisibility(View.VISIBLE);
-                    btSpace.setVisibility(View.VISIBLE);
+                    linearLayout = findViewById(R.id.putMorse);
+                    linearLayout.setVisibility(View.VISIBLE);
                 }else{
-                    btShortPoint.setVisibility(View.INVISIBLE);
-                    btLongPoint.setVisibility(View.INVISIBLE);
-                    btSpace.setVisibility(View.INVISIBLE);
+                    linearLayout = findViewById(R.id.putMorse);
+                    linearLayout.setVisibility(View.INVISIBLE);
                 }
+                String tmp = etStr.getText().toString();
+                etStr.setText("");
+                etStr.setText(tmp);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
+    }
+    public void clearCross(View v){
+        resultLayout = findViewById(R.id.result);
+        etStr.setText("");
+        etN.setText("");
+        tvCrypt.setText("");
+        resultLayout.startAnimation(fadeOut);
+        cross.startAnimation(fadeOut);
+        flgCross = flgResult = false;
     }
 
     public boolean onCreateOptionsMenu(Menu menu){
@@ -153,106 +317,106 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v){
         int id = v.getId();
 
-        if(id == idEncry){     //Clickされたのが暗号化ボタンなら
-            plainStr = etStr.getText().toString();    //入力された文字列を取得
-            int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
-
-            if(item == 0){      //換字式なら
-                if(plainStr.equals("") && etN.getText().toString().equals("")) {                //入力と鍵がないなら
-//                    tvCrypt.setText(R.string.noStringAndKey);
-                    tst.setText(R.string.noStringAndKey);
-                    tst.show();
-                } else if(plainStr.equals("")) {                 //入力がないなら
-//                    tvCrypt.setText(R.string.noString);
-                    tst.setText(R.string.noString);
-                    tst.show();
-                }else if(etN.getText().toString().equals("")){    //鍵が空欄なら
-//                    tvCrypt.setText(R.string.noKey);
-                    tst.setText(R.string.noKey);
-                    tst.show();
-                } else{
-                    int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
-                    Kaeji kj = new Kaeji(plainStr, 0, key);
-                    kj.encry();
-                    tvCrypt.setTextSize(20);
-                    cryptStr = kj.outPut();
-                    tvCrypt.setText(cryptStr);
-                    tvFadein(tvCrypt);
-                    arrayHistory.add(plainStr + "→" + cryptStr);
-//                tvCrypt.setText(kaeji(plainStr, mode));
-                    btCpy.setVisibility(View.VISIBLE);
-                    btFil.setVisibility(View.VISIBLE);
-                }
-            }
-            else if(item == 1) {        //モールス信号なら
-                if(plainStr.equals("")) {                 //入力がないなら
-//                    tvCrypt.setText(R.string.noString);
-                    tst.setText(R.string.noString);
-                    tst.show();
-                }else{
-                    Morse morse = new Morse(plainStr, 0);
-                    morse.encry();
-                    tvCrypt.setTextSize(14);
-                    cryptStr = morse.outPut();
-                    tvCrypt.setText(cryptStr);
-                    tvFadein(tvCrypt);
-                    arrayHistory.add(plainStr + "→" + cryptStr);
-                    btCpy.setVisibility(View.VISIBLE);
-                    btFil.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-        else if(id == idDecry){ //Clickされたのが復号ボタンなら
-            plainStr = etStr.getText().toString();    //入力された文字列を取得
-            int item = spnrEncry.getSelectedItemPosition();
-
-            if(item == 0){      //換字式なら
-                if(plainStr.equals("") && etN.getText().toString().equals("")) {        //入力と鍵がないなら
-//                    tvCrypt.setText((R.string.noStringAndKey));
-                    tst.setText(R.string.noStringAndKey);
-                    tst.show();
-                } else if(plainStr.equals("")) {                 //入力がないなら
-//                    tvCrypt.setText(R.string.noString);
-                    tst.setText(R.string.noString);
-                    tst.show();
-                }else if(etN.getText().toString().equals("")){    //鍵が空欄なら
-//                    tvCrypt.setText(R.string.noKey);
-                    tst.setText(R.string.noKey);
-                    tst.show();
-                } else{
-                    int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
-                    Kaeji kj = new Kaeji(plainStr, 1, key);
-                    kj.encry();
-                    tvCrypt.setTextSize(20);
-                    cryptStr = kj.outPut();
-                    tvCrypt.setText(cryptStr);
-                    tvFadein(tvCrypt);
-                    arrayHistory.add(plainStr + "→" + cryptStr);
-//                tvCrypt.setText(kaeji(plainStr, mode));
-                    btCpy.setVisibility(View.VISIBLE);
-                    btFil.setVisibility(View.VISIBLE);
-                }
-            }
-            else if(item == 1) {        //モールス信号なら
-                if(plainStr.equals("")) {                 //入力がないなら
-//                    tvCrypt.setText(R.string.noMorse);
-                    tst.setText(R.string.noMorse);
-                    tst.show();
-                }else{
-                    Morse morse = new Morse(plainStr, 1);
-                    morse.encry();
-                    tvCrypt.setTextSize(20);
-                    cryptStr = morse.outPut();
-                    tvCrypt.setText(cryptStr);
-                    tvFadein(tvCrypt);
-                    arrayHistory.add(plainStr + "→" + cryptStr);
-                    btCpy.setVisibility(View.VISIBLE);
-                    btFil.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-        else if(id == idClear){ etStr.setText("");}
-        else if(id == idCpy){     //ｸﾘｯﾌﾟﾎﾞｰﾄﾞにｺﾋﾟｰボタンなら
+//        if(id == idEncry){     //Clickされたのが暗号化ボタンなら
+//            plainStr = etStr.getText().toString();    //入力された文字列を取得
+//            int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
+//
+//            if(item == 0){      //換字式なら
+//                if(plainStr.equals("") && etN.getText().toString().equals("")) {                //入力と鍵がないなら
+////                    tvCrypt.setText(R.string.noStringAndKey);
+//                    tst.setText(R.string.noStringAndKey);
+//                    tst.show();
+//                } else if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noString);
+//                    tst.setText(R.string.noString);
+//                    tst.show();
+//                }else if(etN.getText().toString().equals("")){    //鍵が空欄なら
+////                    tvCrypt.setText(R.string.noKey);
+//                    tst.setText(R.string.noKey);
+//                    tst.show();
+//                } else{
+//                    int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
+//                    Kaeji kj = new Kaeji(plainStr, 0, key);
+//                    kj.encry();
+//                    tvCrypt.setTextSize(20);
+//                    cryptStr = kj.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+////                tvCrypt.setText(kaeji(plainStr, mode));
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//            else if(item == 1) {        //モールス信号なら
+//                if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noString);
+//                    tst.setText(R.string.noString);
+//                    tst.show();
+//                }else{
+//                    Morse morse = new Morse(plainStr, 0);
+//                    morse.encry();
+//                    tvCrypt.setTextSize(14);
+//                    cryptStr = morse.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
+//        else if(id == idDecry){ //Clickされたのが復号ボタンなら
+//            plainStr = etStr.getText().toString();    //入力された文字列を取得
+//            int item = spnrEncry.getSelectedItemPosition();
+//
+//            if(item == 0){      //換字式なら
+//                if(plainStr.equals("") && etN.getText().toString().equals("")) {        //入力と鍵がないなら
+////                    tvCrypt.setText((R.string.noStringAndKey));
+//                    tst.setText(R.string.noStringAndKey);
+//                    tst.show();
+//                } else if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noString);
+//                    tst.setText(R.string.noString);
+//                    tst.show();
+//                }else if(etN.getText().toString().equals("")){    //鍵が空欄なら
+////                    tvCrypt.setText(R.string.noKey);
+//                    tst.setText(R.string.noKey);
+//                    tst.show();
+//                } else{
+//                    int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
+//                    Kaeji kj = new Kaeji(plainStr, 1, key);
+//                    kj.encry();
+//                    tvCrypt.setTextSize(20);
+//                    cryptStr = kj.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+////                tvCrypt.setText(kaeji(plainStr, mode));
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//            else if(item == 1) {        //モールス信号なら
+//                if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noMorse);
+//                    tst.setText(R.string.noMorse);
+//                    tst.show();
+//                }else{
+//                    Morse morse = new Morse(plainStr, 1);
+//                    morse.encry();
+//                    tvCrypt.setTextSize(20);
+//                    cryptStr = morse.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
+//        if(id == idClear){ etStr.setText("");}
+        if(id == idCpy){     //ｸﾘｯﾌﾟﾎﾞｰﾄﾞにｺﾋﾟｰボタンなら
             ClipboardManager cbm = (ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
             if(cbm == null){
                 tst = Toast.makeText(this, "Copy failed.", Toast.LENGTH_SHORT);
@@ -271,12 +435,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(id == idSpace){ etStr.append(" ");}
     }
 
-    private  void tvFadein(TextView tv){
-        AlphaAnimation alphaFadein = new AlphaAnimation(0.0f, 1.0f);
-        alphaFadein.setDuration(700);
-        alphaFadein.setFillAfter(true);
-        tv.startAnimation(alphaFadein);
-    }
+//    private  void tvFadein(TextView tv){
+//        AlphaAnimation alphaFadein = new AlphaAnimation(0.0f, 1.0f);
+//        alphaFadein.setDuration(700);
+//        alphaFadein.setFillAfter(true);
+//        tv.startAnimation(alphaFadein);
+//    }
 
     public class Encode{
         String plainStr;
@@ -313,7 +477,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             this.key = key;
         }
 
-        void load(String plainStr, int mode, int key){
+        void load(String plainStr, int key, int mode){
             super.load(plainStr, mode);
             setKey(key);
         }

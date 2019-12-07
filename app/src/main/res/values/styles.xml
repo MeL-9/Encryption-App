@@ -22,11 +22,13 @@
     </style>
 
     <style name="morsePutButton">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:background">@color/colorButtonBackground</item>
-        <item name="android:visibility">gone</item>
+        <item name="android:layout_marginRight">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:background">@drawable/button_ripple</item>
+        <item name="android:textSize">12dp</item>
         <item name="android:layout_weight">1</item>
     </style>
 
