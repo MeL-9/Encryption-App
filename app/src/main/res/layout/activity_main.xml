@@ -57,7 +57,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -90,58 +90,62 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/key_kaeji"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp"
-                android:visibility="gone">
+                android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="5dp"
-                    android:textSize="18dp"
-                    android:text="@string/key"/>
-                <EditText
-                    android:id="@+id/n_kaeji"
+                <LinearLayout
+                    android:id="@+id/key_kaeji"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#F7F7F7"
-                    android:inputType="number"
-                    android:hint="@string/hint_kaeji"/>
-            </LinearLayout>
+                    android:layout_marginRight="5dp"
+                    android:visibility="gone">
 
-            <LinearLayout
-                android:id="@+id/putMorse"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:visibility="gone">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:textSize="18dp"
+                        android:text="@string/key"/>
+                    <EditText
+                        android:id="@+id/n_kaeji"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:background="#D1F6FD"
+                        android:inputType="number"
+                        android:hint="@string/hint_kaeji"/>
+                </LinearLayout>
 
-                <Button
-                    style="@style/morsePutButton"
-                    android:id="@+id/bt_put_space"
-                    android:text="@string/space"/>
-                <Button
-                    style="@style/morsePutButton"
-                    android:id="@+id/bt_put_short"
-                    android:text="@string/short_point"/>
+                <LinearLayout
+                    android:id="@+id/putMorse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:visibility="gone">
 
-                <Button
-                    style="@style/morsePutButton"
-                    android:id="@+id/bt_put_long"
-                    android:text="@string/long_point" />
-                <Button
-                    style="@style/morsePutButton"
-                    android:id="@+id/bt_bs"
-                    android:text="@string/allow_left" />
+                    <Button
+                        style="@style/morsePutButton"
+                        android:id="@+id/bt_put_space"
+                        android:text="@string/space"/>
+                    <Button
+                        style="@style/morsePutButton"
+                        android:id="@+id/bt_put_short"
+                        android:text="@string/short_point"/>
 
-            </LinearLayout>
+                    <Button
+                        style="@style/morsePutButton"
+                        android:id="@+id/bt_put_long"
+                        android:text="@string/long_point" />
+                    <Button
+                        style="@style/morsePutButton"
+                        android:id="@+id/bt_bs"
+                        android:text="@string/allow_left" />
 
-
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
 
 

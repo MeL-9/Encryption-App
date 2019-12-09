@@ -440,7 +440,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(id == idShortpoint){ etStr.append("・"); }
         else if(id == idLongPoint){ etStr.append("－");}
         else if(id == idSpace){ etStr.append(" ");}
-        else if(id == idBS){if(etStr.length() > 0)etStr.setText(etStr.getText().toString().substring(0, etStr.length()-1));}
+        else if(id == idBS){
+            if(etStr.length() > 0){
+                etStr.setText(etStr.getText().toString().substring(0, etStr.length()-1));
+                etStr.setSelection(etStr.length());
+            }
+        }
     }
 
 //    private  void tvFadein(TextView tv){
