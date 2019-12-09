@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Button btEncry, btDecry, btClear, btCpy, btFil, btShortPoint, btLongPoint, btSpace;
+    private Button btEncry, btDecry, btClear, btCpy, btFil, btShortPoint, btLongPoint, btSpace, btBS;
     private EditText etStr, etN;
     private Spinner spnrEncry;
     private TextView tvCrypt, cross;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //    private int idEncry = R.id.bt_encry, idDecry = R.id.bt_decry, idClear = R.id.bt_clear;    //暗号化、復号、クリアボタンは廃止
     private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
-            idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space;
+            idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,idBS = R.id.bt_bs;
 
     private ArrayList<String> arrayHistory;
     private boolean flgCross, flgResult;    //表示非表示を切り替える要素のためのフラグ
@@ -54,7 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btFil = findViewById(idFil);
         btShortPoint = findViewById(idShortpoint);
         btLongPoint = findViewById(idLongPoint);
-        btSpace  = findViewById(idSpace);
+        btSpace = findViewById(idSpace);
+        btBS = findViewById(idBS);
         etStr = findViewById(R.id.et_str);
         etN = findViewById(R.id.n_kaeji);
         spnrEncry = findViewById(R.id.spinner);
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btShortPoint.setOnClickListener(this);
         btLongPoint.setOnClickListener(this);
         btSpace.setOnClickListener(this);
+        btBS.setOnClickListener(this);
 
         fadeIn = new AlphaAnimation(0.0f, 1.0f);        //FadeInとFadeOutのアニメーション設定
         fadeIn.setDuration(300);
@@ -438,6 +440,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         else if(id == idShortpoint){ etStr.append("・"); }
         else if(id == idLongPoint){ etStr.append("－");}
         else if(id == idSpace){ etStr.append(" ");}
+        else if(id == idBS){if(etStr.length() > 0)etStr.setText(etStr.getText().toString().substring(0, etStr.length()-1));}
     }
 
 //    private  void tvFadein(TextView tv){

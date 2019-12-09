@@ -17,6 +17,7 @@
     <string name="short_point">・</string>
     <string name="long_point">－</string>
     <string name="space">空白</string>
+    <string name="allow_left">←</string>
     <string name="noStringAndKey">文字列と鍵を入力してください</string>
     <string name="noString">文字列を入力してください</string>
     <string name="noKey">鍵を入力してください</string>
