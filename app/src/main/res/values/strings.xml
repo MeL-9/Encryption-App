@@ -9,27 +9,24 @@
     <string name="sel_encry">使用する方式を選択</string>
     <string name="morse">モールス符号</string>
     <string name="kaeji">換字式暗号</string>
-    <string name="key">鍵</string>
-    <string name="hint_kaeji">数を入力</string>
-    <string name="hint_str">文字列を入力</string>
+    <string name="hint_kaeji">鍵となる数を入力</string>
+    <string name="hint_hiragana">ひらがなの文字列を入力</string>
     <string name="copy_clip">クリップボードにコピー</string>
     <string name="fillin_ue">上に入れる</string>
     <string name="short_point">・</string>
     <string name="long_point">－</string>
     <string name="space">空白</string>
-    <string name="allow_left">←</string>
-    <string name="noStringAndKey">文字列と鍵を入力してください</string>
-    <string name="noString">文字列を入力してください</string>
+    <string name="noStringAndKey">ひらがなと鍵を入力してください</string>
+    <string name="noString">ひらがなを入力してください</string>
     <string name="noKey">鍵を入力してください</string>
     <string name="noMorse">モールス符号を入力してください</string>
-    <string name="over">10以上の桁数にはできません</string>
 
 
     <string name="available">使用可能なひらがな</string>
     <string name="hiragana">ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ
                             ただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽ
                             まみむめもゃやゅゆょよらりるれろゎわゐゑをん</string>
-    <string name="about_morse">ひらがな小文字のモールス符号について</string>
+    <string name="about_morse">小文字のモールス符号について</string>
     <string name="explain_morse">小文字のひらがなは大文字の符号のあとに半角スペースを挟み半濁点の符号(・・－－・)を打ちます</string>
     <string name="list_code">モールス符号表</string>
     <string name="history">変換履歴</string>
