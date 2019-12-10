@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Button btCpy, btFil, btShortPoint, btLongPoint, btSpace, btBS;
+    private Button btEncry, btDecry, btClear, btCpy, btFil, btShortPoint, btLongPoint, btSpace, btBS;
     private EditText etStr, etN;
     private Spinner spnrEncry;
     private TextView tvCrypt, cross;
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Toast tst;
     private LinearLayout linearLayout, resultLayout;
 
+//    private int idEncry = R.id.bt_encry, idDecry = R.id.bt_decry, idClear = R.id.bt_clear;    //暗号化、復号、クリアボタンは廃止
     private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
             idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,idBS = R.id.bt_bs;
 
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        btEncry = findViewById(idEncry);
+//        btDecry = findViewById(idDecry);
+//        btClear = findViewById(idClear);
         btCpy = findViewById(idCpy);
         btFil = findViewById(idFil);
         btShortPoint = findViewById(idShortpoint);
@@ -59,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         cross = findViewById(R.id.cross);
         radioMode = findViewById(R.id.radioMode);
 
+//        btEncry.setOnClickListener(this);
+//        btDecry.setOnClickListener(this);
+//        btClear.setOnClickListener(this);
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
         btShortPoint.setOnClickListener(this);
@@ -125,7 +132,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     resultLayout.startAnimation(fadeIn);
                                     flgResult = true;
                                 }
+//                                tvCrypt.startAnimation(fadeIn);     //結果をFadeIn
                                 arrayHistory.add(plainStr + "→" + cryptStr);    //履歴用のArrayListにadd
+//                                btCpy.setVisibility(View.VISIBLE);        //コピーと上に入れるボタンを表示 -> 結果フレームごと隠すようにしたため不要
+//                                btFil.setVisibility(View.VISIBLE);
                                 break;
                             }
 
@@ -145,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     resultLayout.startAnimation(fadeIn);
                                     flgResult = true;
                                 }
+//                                tvCrypt.startAnimation(fadeIn);
                                 arrayHistory.add(plainStr + "→" + cryptStr);
                                 break;
                             }
@@ -161,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
+//                            tvCrypt.startAnimation(fadeIn);
                             arrayHistory.add(plainStr + "→" + cryptStr);
                             break;
 
@@ -174,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
+//                            tvCrypt.startAnimation(fadeIn);
                             arrayHistory.add(plainStr + "→" + cryptStr);
                             break;
                     }
@@ -208,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 etStr.setText(tmp);
             }
         });
+
 
         dlg = new AlertDialog.Builder(this);
 
@@ -247,14 +261,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 etStr.setText("");
                 etStr.setText(tmp);
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
         });
-    }
 
+    }
     public void clearCross(View v){     //×を押したときの処理
         resultLayout = findViewById(R.id.result);
         etStr.setText("");
+//        etN.setText("");
         tvCrypt.setText("");
         resultLayout.startAnimation(fadeOut);
         cross.startAnimation(fadeOut);
@@ -308,6 +324,105 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v){
         int id = v.getId();
 
+//        if(id == idEncry){     //Clickされたのが暗号化ボタンなら
+//            plainStr = etStr.getText().toString();    //入力された文字列を取得
+//            int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
+//
+//            if(item == 0){      //換字式なら
+//                if(plainStr.equals("") && etN.getText().toString().equals("")) {                //入力と鍵がないなら
+////                    tvCrypt.setText(R.string.noStringAndKey);
+//                    tst.setText(R.string.noStringAndKey);
+//                    tst.show();
+//                } else if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noString);
+//                    tst.setText(R.string.noString);
+//                    tst.show();
+//                }else if(etN.getText().toString().equals("")){    //鍵が空欄なら
+////                    tvCrypt.setText(R.string.noKey);
+//                    tst.setText(R.string.noKey);
+//                    tst.show();
+//                } else{
+//                    int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
+//                    Kaeji kj = new Kaeji(plainStr, 0, key);
+//                    kj.encry();
+//                    tvCrypt.setTextSize(20);
+//                    cryptStr = kj.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+////                tvCrypt.setText(kaeji(plainStr, mode));
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//            else if(item == 1) {        //モールス信号なら
+//                if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noString);
+//                    tst.setText(R.string.noString);
+//                    tst.show();
+//                }else{
+//                    Morse morse = new Morse(plainStr, 0);
+//                    morse.encry();
+//                    tvCrypt.setTextSize(14);
+//                    cryptStr = morse.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
+//        else if(id == idDecry){ //Clickされたのが復号ボタンなら
+//            plainStr = etStr.getText().toString();    //入力された文字列を取得
+//            int item = spnrEncry.getSelectedItemPosition();
+//
+//            if(item == 0){      //換字式なら
+//                if(plainStr.equals("") && etN.getText().toString().equals("")) {        //入力と鍵がないなら
+////                    tvCrypt.setText((R.string.noStringAndKey));
+//                    tst.setText(R.string.noStringAndKey);
+//                    tst.show();
+//                } else if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noString);
+//                    tst.setText(R.string.noString);
+//                    tst.show();
+//                }else if(etN.getText().toString().equals("")){    //鍵が空欄なら
+////                    tvCrypt.setText(R.string.noKey);
+//                    tst.setText(R.string.noKey);
+//                    tst.show();
+//                } else{
+//                    int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
+//                    Kaeji kj = new Kaeji(plainStr, 1, key);
+//                    kj.encry();
+//                    tvCrypt.setTextSize(20);
+//                    cryptStr = kj.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+////                tvCrypt.setText(kaeji(plainStr, mode));
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//            else if(item == 1) {        //モールス信号なら
+//                if(plainStr.equals("")) {                 //入力がないなら
+////                    tvCrypt.setText(R.string.noMorse);
+//                    tst.setText(R.string.noMorse);
+//                    tst.show();
+//                }else{
+//                    Morse morse = new Morse(plainStr, 1);
+//                    morse.encry();
+//                    tvCrypt.setTextSize(20);
+//                    cryptStr = morse.outPut();
+//                    tvCrypt.setText(cryptStr);
+//                    tvCrypt.startAnimation(fadeIn);
+//                    arrayHistory.add(plainStr + "→" + cryptStr);
+//                    btCpy.setVisibility(View.VISIBLE);
+//                    btFil.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
+//        if(id == idClear){ etStr.setText("");}
         if(id == idCpy){     //ｸﾘｯﾌﾟﾎﾞｰﾄﾞにｺﾋﾟｰボタンなら
             ClipboardManager cbm = (ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
             if(cbm == null){
@@ -332,6 +447,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+//    private  void tvFadein(TextView tv){
+//        AlphaAnimation alphaFadein = new AlphaAnimation(0.0f, 1.0f);
+//        alphaFadein.setDuration(700);
+//        alphaFadein.setFillAfter(true);
+//        tv.startAnimation(alphaFadein);
+//    }
 
     public class Encode{
         String plainStr;
@@ -485,6 +607,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 for(String str: strMorses){
                     if(listMorses.contains(str)){       //コードリストにある文字列ならその文字を追加
                         crypt.append((char)('ぁ' + listMorses.indexOf(str)));
+//                    crypt.append(str + ", ");     //デバッグ用、strMorseの要素ごとに出力
                     }else{      //なければ"？"を追加
                         crypt.append("？");
                     }
@@ -493,4 +616,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
+//    public String kaeji(String plain, int id){  //換字式暗号化メソッド
+//        char tmp = 0;
+//        StringBuilder crypt = new StringBuilder();
+//
+//        int n = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵nを読み込み
+//        int x = 0;
+//
+//        while(n > 'ん' - 'ぁ' + 1)    //余計に大きいnを範囲内までカット
+//            n -= 'ん' - 'ぁ' + 1;
+//
+//        if(id == 0){     //暗号化なら
+//            for(int i = 0; i < plain.length(); i++){    //文字列の長さ分ループ
+//                tmp = plain.charAt(i);   //文字列を1文字ずつチェックする
+//                x = n;
+//                if(UnicodeBlock.of(tmp) == UnicodeBlock.HIRAGANA) {     //見ている文字がひらがななら
+//                    if(tmp + x <= 'ん')
+//                        tmp += x;
+//                    else {                     //ずらすと'ん'を通り越す場合
+//                        x -= 'ん' - tmp + 1;
+//                        tmp = 'ぁ';
+//                        tmp += x;
+//                    }
+//                }              //ひらがなでないならそのまま
+//                crypt.append(tmp);
+//            }
+//        }
+//        else if(id == 1){    //復号なら
+//            for(int i = 0; i < plain.length(); i++){    //文字列の長さ分ループ
+//                tmp = plain.charAt(i);   //文字列を1文字ずつチェックする
+//                x = n;
+//                if(UnicodeBlock.of(tmp) == UnicodeBlock.HIRAGANA) {     //見ている文字がひらがななら
+//                    if(tmp - x >= 'ぁ')
+//                        tmp -= x;
+//                    else {                     //ずらすと'ぁ'を通り越す場合
+//                        x -= tmp - 'ぁ' + 1;
+//                        tmp = 'ん';
+//                        tmp -= x;
+//                    }
+//                }              //ひらがなでないならそのまま
+//                crypt.append(tmp);
+//            }
+//        }
+//        return crypt.toString();
+//    }
 }
