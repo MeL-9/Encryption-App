@@ -27,13 +27,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText etStr, etN;
     private Spinner spnrEncry;
     private TextView tvCrypt, cross;
-    private AlertDialog.Builder dlg;
+    private CompoundButton swMode;
 
-    private String plainStr, cryptStr;
-    private RadioGroup radioMode;
+    private AlertDialog.Builder dlg;
     private AlphaAnimation fadeIn, fadeOut;
     private Toast tst;
     private LinearLayout linearLayout, resultLayout;
+
+    private String plainStr, cryptStr;
+    private boolean mode;
 
     private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
             idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,idBS = R.id.bt_bs;
@@ -57,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spnrEncry = findViewById(R.id.spinner);
         tvCrypt = findViewById(R.id.tv_crypt);
         cross = findViewById(R.id.cross);
-        radioMode = findViewById(R.id.radioMode);
+        swMode = findViewById(R.id.sw_mode);
+        mode = false;
 
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
@@ -65,6 +68,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btLongPoint.setOnClickListener(this);
         btSpace.setOnClickListener(this);
         btBS.setOnClickListener(this);
+
+        swMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mode = isChecked;
+                String tmp = etStr.getText().toString();
+                etStr.setText("");
+                etStr.setText(tmp);
+            }
+        });
 
         fadeIn = new AlphaAnimation(0.0f, 1.0f);        //FadeInとFadeOutのアニメーション設定
         fadeIn.setDuration(300);
@@ -79,8 +92,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         fadeOut.setDuration(300);
 
         flgCross = flgResult = false;
-
-        radioMode.check(R.id.radioEncry);
 
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
         tst.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
@@ -108,74 +119,65 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
 
                 if(item == 1)  {        //換字式なら
-                    switch (radioMode.getCheckedRadioButtonId()){       //ラジオボタンで動作を確定
-                        case R.id.radioEncry:     //暗号化が選ばれているなら
-                            if(etN.getText().toString().equals("")){        //鍵が空欄なら
-                                tst.setText(R.string.noKey);
-                                tst.show();
-                                break;
-                            }else{
-                                int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
-                                Kaeji kj = new Kaeji(plainStr, key, 0);     //暗号化するメソッドを持つクラスを定義
-                                kj.encry();         //暗号化メソッド実行
-                                tvCrypt.setTextSize(20);
-                                cryptStr = kj.outPut();     //暗号化結果を取得
-                                tvCrypt.setText(cryptStr);      //結果をTexiViewにセット
-                                if(flgResult == false){     //結果フレームが表示されていなければFadeInさせる
-                                    resultLayout.startAnimation(fadeIn);
-                                    flgResult = true;
-                                }
-                                arrayHistory.add(plainStr + "→" + cryptStr);    //履歴用のArrayListにadd
-                                break;
-                            }
-
-                        case R.id.radioDecry:     //復号が選ばれているなら
-                            if(etN.getText().toString().equals("")){
-                                tst.setText(R.string.noKey);
-                                tst.show();
-                                break;
-                            }else{
-                                int key = Integer.parseInt(etN.getText().toString());
-                                Kaeji kj = new Kaeji(plainStr, key, 1);
-                                kj.encry();
-                                tvCrypt.setTextSize(20);
-                                cryptStr = kj.outPut();
-                                tvCrypt.setText(cryptStr);
-                                if(flgResult == false){
-                                    resultLayout.startAnimation(fadeIn);
-                                    flgResult = true;
-                                }
-                                arrayHistory.add(plainStr + "→" + cryptStr);
-                                break;
-                            }
-                    }
-                }else if(item == 0){          //モールス信号なら
-                    switch (radioMode.getCheckedRadioButtonId()){
-                        case R.id.radioEncry:     //暗号化が選ばれているなら
-                            Morse morse = new Morse(plainStr, 0);
-                            morse.encry();
-                            tvCrypt.setTextSize(14);        //モールス符号用にサイズを変更
-                            cryptStr = morse.outPut();
-                            tvCrypt.setText(cryptStr);
-                            if(flgResult == false){
-                                resultLayout.startAnimation(fadeIn);
-                                flgResult = true;
-                            }
-                            arrayHistory.add(plainStr + "→" + cryptStr);
-                            break;
-
-                        case R.id.radioDecry:     //復号が選ばれているなら
-                            morse = new Morse(plainStr, 1);
-                            morse.encry();
+                    if(mode){       //復号なら
+                        if(etN.getText().toString().equals("")){
+                            tst.setText(R.string.noKey);
+                            tst.show();
+                        }else{
+                            int key = Integer.parseInt(etN.getText().toString());
+                            Kaeji kj = new Kaeji(plainStr, key, 1);
+                            kj.encry();
                             tvCrypt.setTextSize(20);
-                            cryptStr = morse.outPut();
+                            cryptStr = kj.outPut();
                             tvCrypt.setText(cryptStr);
                             if(flgResult == false){
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
                             arrayHistory.add(plainStr + "→" + cryptStr);
-                            break;
+                        }
+                    }else{      //暗号化なら
+                        if(etN.getText().toString().equals("")){        //鍵が空欄なら
+                        tst.setText(R.string.noKey);
+                        tst.show();
+                        }else{
+                            int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
+                            Kaeji kj = new Kaeji(plainStr, key, 0);     //暗号化するメソッドを持つクラスを定義
+                            kj.encry();         //暗号化メソッド実行
+                            tvCrypt.setTextSize(20);
+                            cryptStr = kj.outPut();     //暗号化結果を取得
+                            tvCrypt.setText(cryptStr);      //結果をTexiViewにセット
+                            if(flgResult == false){     //結果フレームが表示されていなければFadeInさせる
+                                resultLayout.startAnimation(fadeIn);
+                                 flgResult = true;
+                            }
+                        arrayHistory.add(plainStr + "→" + cryptStr);    //履歴用のArrayListにadd
+                        }
+                    }
+
+                }else if(item == 0){          //モールス信号なら
+                    if(mode){       //復号なら
+                        Morse morse = new Morse(plainStr, 1);
+                        morse.encry();
+                        tvCrypt.setTextSize(20);
+                        cryptStr = morse.outPut();
+                        tvCrypt.setText(cryptStr);
+                        if(flgResult == false){
+                            resultLayout.startAnimation(fadeIn);
+                            flgResult = true;
+                        }
+                        arrayHistory.add(plainStr + "→" + cryptStr);
+                    }else{      //暗号化なら
+                        Morse morse = new Morse(plainStr, 0);
+                        morse.encry();
+                        tvCrypt.setTextSize(14);        //モールス符号用にサイズを変更
+                        cryptStr = morse.outPut();
+                        tvCrypt.setText(cryptStr);
+                        if(flgResult == false){
+                            resultLayout.startAnimation(fadeIn);
+                            flgResult = true;
+                        }
+                        arrayHistory.add(plainStr + "→" + cryptStr);
                     }
                 }
                 return;
@@ -198,15 +200,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             @Override
             public void afterTextChanged(Editable s) {}
-        });
-
-        radioMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {     //ラジオグループの変更を監視するリスナを設定
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                String tmp = etStr.getText().toString();
-                etStr.setText("");
-                etStr.setText(tmp);
-            }
         });
 
         dlg = new AlertDialog.Builder(this);
