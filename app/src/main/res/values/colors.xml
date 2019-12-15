@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorButton">#065A5A</color>
     <color name="colorButtonActive">#078B7D</color>
+    <color name="encrypt">#FFEB3B</color>
 </resources>

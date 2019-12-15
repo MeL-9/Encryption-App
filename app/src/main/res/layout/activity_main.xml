@@ -69,6 +69,27 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/normalText"
+                        android:text="@string/encrypt"/>
+                    <Switch
+                        android:id="@+id/sw_mode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:thumbTint="@color/encrypt"
+                        android:checked="false"/>
+                    <TextView
+                        style="@style/normalText"
+                        android:text="@string/decrypt"/>
+                </LinearLayout>
+
                 <RadioGroup
                     android:id="@+id/radioMode"
                     android:layout_width="wrap_content"
@@ -122,27 +143,52 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:gravity="center"
                     android:visibility="gone">
 
-                    <Button
-                        style="@style/morsePutButton"
-                        android:id="@+id/bt_put_space"
-                        android:text="@string/space"/>
-                    <Button
-                        style="@style/morsePutButton"
-                        android:id="@+id/bt_put_short"
-                        android:text="@string/short_point"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <Button
-                        style="@style/morsePutButton"
-                        android:id="@+id/bt_put_long"
-                        android:text="@string/long_point" />
-                    <Button
-                        style="@style/morsePutButton"
-                        android:id="@+id/bt_bs"
-                        android:text="@string/allow_left" />
+                        <Button
+                            style="@style/morsePutButton"
+                            android:id="@+id/bt_put_space"
+                            android:text="@string/space"/>
+                        <Button
+                            style="@style/morsePutButton"
+                            android:id="@+id/bt_put_short"
+                            android:text="@string/short_point"/>
+
+                        <Button
+                            style="@style/morsePutButton"
+                            android:id="@+id/bt_put_long"
+                            android:text="@string/long_point" />
+                        <Button
+                            style="@style/morsePutButton"
+                            android:id="@+id/bt_bs"
+                            android:text="@string/allow_left" />
+                    </LinearLayout>
+
+                    <RadioGroup
+                        android:id="@+id/radio_lang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:id="@+id/radio_jp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/radio_jp"/>
+                        <RadioButton
+                            android:id="@+id/radio_eng"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/radio_eng"/>
+                    </RadioGroup>
+
+
 
                 </LinearLayout>
             </FrameLayout>
