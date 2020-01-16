@@ -123,9 +123,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable s) {
                 plainStr = s.toString();
+                etStr.setSelection(etStr.length());
                 if(plainStr.equals("")){
-                    cross.startAnimation(fadeOut);
-                    resultLayout.startAnimation(fadeOut);
+                    if(flgCross && flgResult){
+                        cross.startAnimation(fadeOut);
+                        resultLayout.startAnimation(fadeOut);
+                    }
                     flgCross = flgResult = false;
                     return;
                 }
