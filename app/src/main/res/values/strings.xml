@@ -28,7 +28,7 @@
 
 
     <string name="available">使用可能なひらがな</string>
-    <string name="hiragana">ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ
+    <string name="hiragana">ぁあぃいぅうゔぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ
                             ただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽ
                             まみむめもゃやゅゆょよらりるれろゎわゐゑをん</string>
     <string name="about_morse">ひらがな小文字のモールス符号について</string>

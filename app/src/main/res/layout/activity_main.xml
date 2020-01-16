@@ -120,17 +120,17 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/putMorse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="5dp"
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:visibility="gone">
+                    android:gravity="center">
 
                     <LinearLayout
+                        android:id="@+id/putMorse"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:visibility="gone">
 
                         <Button
                             style="@style/morsePutButton"
@@ -168,9 +168,6 @@
                             android:layout_height="wrap_content"
                             android:text="@string/radio_eng"/>
                     </RadioGroup>
-
-
-
                 </LinearLayout>
             </FrameLayout>
         </LinearLayout>

@@ -1,9 +1,12 @@
 package com.lune.encipher;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.lang.Character.UnicodeBlock;
+import java.util.Map;
 
 import android.content.ClipboardManager;
 import android.content.ClipData;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Spinner spnrEncry;
     private TextView tvCrypt, cross;
     private CompoundButton swMode;
+    private RadioGroup rdLang;
 
     private AlertDialog.Builder dlg;
     private AlphaAnimation fadeIn, fadeOut;
@@ -39,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
             idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,idBS = R.id.bt_bs;
+    private int lang;
 
     private ArrayList<String> arrayHistory;
     private boolean flgCross, flgResult;    //表示非表示を切り替える要素のためのフラグ
@@ -60,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvCrypt = findViewById(R.id.tv_crypt);
         cross = findViewById(R.id.cross);
         swMode = findViewById(R.id.sw_mode);
+        rdLang = findViewById(R.id.radio_lang);
         mode = false;
+        lang = 0;
 
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
@@ -69,12 +76,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btSpace.setOnClickListener(this);
         btBS.setOnClickListener(this);
 
+        rdLang.check(R.id.radio_jp);
+        rdLang.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.radio_jp)lang = 0;
+                else if(checkedId == R.id.radio_eng)lang = 1;
+                String tmp = etStr.getText().toString();
+                etStr.setText(tmp);
+            }
+        });
+
         swMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mode = isChecked;
                 String tmp = etStr.getText().toString();
-                etStr.setText("");
                 etStr.setText(tmp);
             }
         });
@@ -112,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     flgCross = flgResult = false;
                     return;
                 }
-                if(plainStr.length() >= 1 && flgCross == false){    //文字が入力されていればクリアボタンの表示をする
+                if(plainStr.length() >= 1 && !flgCross){    //文字が入力されていればクリアボタンの表示をする
                     cross.startAnimation(fadeIn);
                     flgCross = true;
                 }
@@ -125,12 +142,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             tst.show();
                         }else{
                             int key = Integer.parseInt(etN.getText().toString());
-                            Kaeji kj = new Kaeji(plainStr, key, 1);
+                            Kaeji kj = new Kaeji(plainStr, key, 1, 0);
                             kj.encry();
                             tvCrypt.setTextSize(20);
                             cryptStr = kj.outPut();
                             tvCrypt.setText(cryptStr);
-                            if(flgResult == false){
+                            if(!flgResult){
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
@@ -142,12 +159,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         tst.show();
                         }else{
                             int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
-                            Kaeji kj = new Kaeji(plainStr, key, 0);     //暗号化するメソッドを持つクラスを定義
+                            Kaeji kj = new Kaeji(plainStr, key, 0, 0);     //暗号化するメソッドを持つクラスを定義
                             kj.encry();         //暗号化メソッド実行
                             tvCrypt.setTextSize(20);
                             cryptStr = kj.outPut();     //暗号化結果を取得
-                            tvCrypt.setText(cryptStr);      //結果をTexiViewにセット
-                            if(flgResult == false){     //結果フレームが表示されていなければFadeInさせる
+                            tvCrypt.setText(cryptStr);      //結果をTextViewにセット
+                            if(!flgResult){     //結果フレームが表示されていなければFadeInさせる
                                 resultLayout.startAnimation(fadeIn);
                                  flgResult = true;
                             }
@@ -157,23 +174,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 }else if(item == 0){          //モールス信号なら
                     if(mode){       //復号なら
-                        Morse morse = new Morse(plainStr, 1);
+                        Morse morse = new Morse(plainStr, 1, lang);
                         morse.encry();
                         tvCrypt.setTextSize(20);
                         cryptStr = morse.outPut();
                         tvCrypt.setText(cryptStr);
-                        if(flgResult == false){
+                        if(!flgResult){
                             resultLayout.startAnimation(fadeIn);
                             flgResult = true;
                         }
                         arrayHistory.add(plainStr + "→" + cryptStr);
                     }else{      //暗号化なら
-                        Morse morse = new Morse(plainStr, 0);
+                        Morse morse = new Morse(plainStr, 0, lang);
                         morse.encry();
                         tvCrypt.setTextSize(14);        //モールス符号用にサイズを変更
                         cryptStr = morse.outPut();
                         tvCrypt.setText(cryptStr);
-                        if(flgResult == false){
+                        if(!flgResult){
                             resultLayout.startAnimation(fadeIn);
                             flgResult = true;
                         }
@@ -194,7 +211,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tst.show();
                 }else{      //鍵が変更されたら文字列を変化させる
                     String tmp = etStr.getText().toString();
-                    etStr.setText("");
                     etStr.setText(tmp);
                 }
             }
@@ -237,7 +253,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     linearLayout.setVisibility(View.INVISIBLE);
                 }
                 String tmp = etStr.getText().toString();
-                etStr.setText("");
                 etStr.setText(tmp);
             }
             @Override
@@ -330,22 +345,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String plainStr;
         StringBuilder crypt;
         int mode;
+        int lang;
 
         Encode(){   //コンストラクタ
-            this("", 0, 0);
+            this("",  0);
         }
-        Encode(String plainStr, int key, int mode){
-            this.load(plainStr, mode);
+        Encode(String plainStr, int mode){
+            this.load(plainStr, mode, lang);
             crypt = new StringBuilder();
         }
 
         public void setplainStr(String plainStr){ this.plainStr = plainStr; }
         public void setMode(int mode){ this.mode = mode; }
+        public void setLang(int lang){this.lang = lang;}    //lang: 0 => jp 1 => eng
         public String getplainStr(){ return plainStr; }
 
-        void load(String plainStr, int mode){
+        void load(String plainStr, int mode, int lang){
             setplainStr(plainStr);
             setMode(mode);
+            setLang(lang);
         }
         public String outPut(){ return this.crypt.toString(); }
         void encry(){ }
@@ -354,15 +372,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     class Kaeji extends Encode{
         int key;
 
-        Kaeji(){ this("", 0, 0); }   //コンストラクタ
-        Kaeji(String plainStr, int key, int mode){ load(plainStr, key, mode); }
+        Kaeji(){ this("", 0, 0, 0); }   //コンストラクタ
+        Kaeji(String plainStr, int key, int mode, int lang){ load(plainStr, key, mode, lang); }
 
         public void setKey(int key){
             this.key = key;
         }
 
-        void load(String plainStr, int key, int mode){
-            super.load(plainStr, mode);
+        void load(String plainStr, int key, int mode, int lang){
+            super.load(plainStr, mode, lang);
             setKey(key);
         }
 
@@ -411,77 +429,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     class Morse extends Encode{
-        List listMorses = new ArrayList<String>();
+        HashMap codeTable;
 
-        Morse(String plainStr, int mode){ load(plainStr, mode); }
+        Morse(String plainStr, int mode, int lang){ load(plainStr, mode, lang); }
 
-        public void load(String plainStr, int mode){
-            super.load(plainStr, mode);
-            String[] morses = getResources().getStringArray(R.array.list_morse);     //モールス信号のコードリスト読み込み
-            listMorses = Arrays.asList(morses);
+        @Override
+        public void load(String plainStr, int mode, int lang){
+            super.load(plainStr, mode, lang);
+            codeTable = new HashMap<String, String>();
+            String[] plains, morses;
+            if(lang == 0){      //ひらがななら
+                plains = getResources().getStringArray(R.array.plainjp);     //モールス信号のコードリスト読み込み
+                morses = getResources().getStringArray(R.array.morsejp);
+                for(int i=0; i < morses.length; i++)
+                    codeTable.put(plains[i], morses[i]);
+            }else if(lang == 1){    //Alphabetなら
+                plains = getResources().getStringArray(R.array.plaineng);
+                morses = getResources().getStringArray(R.array.morseeng);
+                for(int i=0; i < morses.length; i++)
+                    codeTable.put(plains[i], morses[i]);
+            }
+            plains = getResources().getStringArray(R.array.plaincom);   //コードリストに言語共通のものを追加
+            morses = getResources().getStringArray(R.array.morsecom);
+            for(int i=0; i < plains.length; i++)
+                codeTable.put(plains[i], morses[i]);
+
         }
         @Override
-        public void encry(){
-            crypt.setLength(0);     //暗号文の初期化
+        public void encry(){                    /*暗号化復号メソッド*/
+            crypt.setLength(0);
             char tmp;
-            String afterConverting = "", sonant = "・・", pSound = "・・－－・";
-            int index;
 
-            if(mode == 0){     //暗号化なら
-                for(int i = 0; i < plainStr.length(); i++){    //文字列の長さ分ループ
+            if(mode == 0) {     //暗号化なら
+                for(int i=0; i < plainStr.length(); i++){
                     tmp = plainStr.charAt(i);   //文字列を1文字ずつチェックする
-                    if(tmp >= 'ァ' && tmp <= 'ン')tmp -= 96;       //見ている文字がカタカナならひらがなへ変換
-                    if(tmp == 'ー'){
-                        crypt.append(listMorses.get(83).toString() + " ");
-                        continue;
+
+                    if(tmp == '!')tmp = '！';    //言語に関わらず一部文字を例外的に置き換える                     /*特別な文字を置き換える部分*/
+                    else if(tmp == '?')tmp = '？';
+                    else if(tmp == '@')tmp = '＠';
+                    if(lang == 0){      //jpの場合特有の処理
+//                        if(tmp == '－')tmp = 'ー';     //'ー'はUnicodeBlock.KATAKANAなため例外的に処理
+                        if(tmp == 'ー'){     //'ー'のみ先に処理しないとKATAKANAからの変換で別文字に置き換わる
+                            crypt.append(codeTable.get("ー").toString() + " ");
+                            continue;
+                        }
+                        if(Character.UnicodeBlock.of(tmp) == UnicodeBlock.KATAKANA)tmp -= 96;   //見ている文字がカタカナならひらがなへ変換
+                    }else if(lang == 1){        //engの場合特有の処理
+                        if(tmp >= 'a' && tmp <= 'z')tmp -= 32;      //小文字は大文字に変換
                     }
-                    if(Character.UnicodeBlock.of(tmp) == Character.UnicodeBlock.HIRAGANA) {     //見ている文字がひらがななら
-                        index = tmp - 'ぁ';      //tmpが何番目の文字なのか
-                        afterConverting = listMorses.get(index).toString();     //コードリストのindex番目を代入
-                        crypt.append(afterConverting + " ");        //変換後と空白を追加
-                    }else {              //ひらがなでないならそのまま
-                        crypt.append(tmp);
+
+                    if (codeTable.keySet().contains(String.valueOf(tmp)))                                           /*変換部*/
+                        crypt.append(codeTable.get(String.valueOf(tmp)) + " ");
+                }
+                if(crypt.length() > 0)
+                    crypt.deleteCharAt(crypt.length() - 1);     //最後にも空白が入るので削除
+
+            }else if(mode == 1){    //復号なら
+                String sonant = "・・", pSound = "・・－－・";     //濁点半濁点
+                List<String> plainList = Arrays.asList(plainStr.split(" ",0));  //空白で区切られている暗号を分割
+                Iterator<Map.Entry<String, String>> itr;
+                Map.Entry<String, String> entry;
+
+                for(int i=0;  i < plainList.size(); i++){
+                    if(plainList.get(i).equals(sonant) || plainList.get(i).equals(pSound)){
+                        if(i > 0)
+                            plainList.set(i - 1, plainList.get(i - 1) +  " " + plainList.get(i));
                     }
                 }
-                crypt.deleteCharAt(crypt.length() - 1);     //最後にも空白が入るので削除
-            }
-            else if(mode == 1){    //復号なら
-                crypt.setLength(0);
-                StringBuilder check = new StringBuilder();
-                int i;
-                List<String> strMorses = new ArrayList<String>();       //モールス文をリスト化
-
-                for(i = 0; i < plainStr.length(); i++){    //文字列の長さ分ループ
-                    tmp = plainStr.charAt(i);   //文字列を1文字ずつチェックする
-                    if(tmp == '－' || tmp == '・') {     //見ている文字が'－'または'・'なら
-                        check.append(tmp);
-                    }else if(tmp == ' '){          //' 'ならリストに追加する
-                        strMorses.add(check.toString());
-                        check.setLength(0);     //checkの中身をクリア
-                    }
-                }
-                strMorses.add(check.toString());        //文のリストに追加
-
-                for(i=0;i < strMorses.size();i++){      //濁点、半濁点の検出＆結合
-                    String currentStr = strMorses.get(i);
-                    if(currentStr.equals(sonant) || currentStr.equals(pSound)){
-                        if(i > 0){
-                            strMorses.set(i - 1, strMorses.get(i - 1) + " " + currentStr);
-                            strMorses.remove(i);
-                            i--;
-                        }else{
-                            crypt.append("不適切な値");
-                            return;
+                for(String s : plainList){
+                    itr = codeTable.entrySet().iterator();
+                    while(itr.hasNext()){
+                        entry = itr.next();
+                        if(entry.getValue().equals(s)){
+                            crypt.append(entry.getKey());
+                            break;
                         }
                     }
-                }
-                for(String str: strMorses){
-                    if(listMorses.contains(str)){       //コードリストにある文字列ならその文字を追加
-                        crypt.append((char)('ぁ' + listMorses.indexOf(str)));
-                    }else{      //なければ"？"を追加
-                        crypt.append("？");
-                    }
-
                 }
             }
         }

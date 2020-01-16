@@ -4,13 +4,14 @@
         <item>@string/morse</item>
         <item>@string/kaeji</item>
     </string-array>
-    <string-array name="list_morse">
+    <string-array name="morsejp">
         <item>－－・－－ ・・－－・</item>
         <item>－－・－－</item>
         <item>・－ ・・－－・</item>
         <item>・－</item>
         <item>・・－ ・・－－・</item>
         <item>・・－</item>
+        <item>・・－ ・・</item>
         <item>－・－－－ ・・－－・</item>
         <item>－・－－－</item>
         <item>・－・・・ ・・－－・</item>
@@ -89,5 +90,186 @@
         <item>・－－－</item>
         <item>・－・－・</item>
         <item>・－－・－</item>
+    </string-array>
+    <string-array name="plainjp">
+        <item>ぁ</item>
+        <item>あ</item>
+        <item>ぃ</item>
+        <item>い</item>
+        <item>ぅ</item>
+        <item>う</item>
+        <item>ゔ</item>
+        <item>ぇ</item>
+        <item>え</item>
+        <item>ぉ</item>
+        <item>お</item>
+        <item>か</item>
+        <item>が</item>
+        <item>き</item>
+        <item>ぎ</item>
+        <item>く</item>
+        <item>ぐ</item>
+        <item>け</item>
+        <item>げ</item>
+        <item>こ</item>
+        <item>ご</item>
+        <item>さ</item>
+        <item>ざ</item>
+        <item>し</item>
+        <item>じ</item>
+        <item>す</item>
+        <item>ず</item>
+        <item>せ</item>
+        <item>ぜ</item>
+        <item>そ</item>
+        <item>ぞ</item>
+        <item>た</item>
+        <item>だ</item>
+        <item>ち</item>
+        <item>ぢ</item>
+        <item>っ</item>
+        <item>つ</item>
+        <item>づ</item>
+        <item>て</item>
+        <item>で</item>
+        <item>と</item>
+        <item>ど</item>
+        <item>な</item>
+        <item>に</item>
+        <item>ぬ</item>
+        <item>ね</item>
+        <item>の</item>
+        <item>は</item>
+        <item>ば</item>
+        <item>ぱ</item>
+        <item>ひ</item>
+        <item>び</item>
+        <item>ぴ</item>
+        <item>ふ</item>
+        <item>ぶ</item>
+        <item>ぷ</item>
+        <item>へ</item>
+        <item>べ</item>
+        <item>ぺ</item>
+        <item>ほ</item>
+        <item>ぼ</item>
+        <item>ぽ</item>
+        <item>ま</item>
+        <item>み</item>
+        <item>む</item>
+        <item>め</item>
+        <item>も</item>
+        <item>ゃ</item>
+        <item>や</item>
+        <item>ゅ</item>
+        <item>ゆ</item>
+        <item>ょ</item>
+        <item>よ</item>
+        <item>ら</item>
+        <item>り</item>
+        <item>る</item>
+        <item>れ</item>
+        <item>ろ</item>
+        <item>ゎ</item>
+        <item>わ</item>
+        <item>ゐ</item>
+        <item>ゑ</item>
+        <item>を</item>
+        <item>ん</item>
+        <item>ー</item>
+    </string-array>
+    <string-array name="morseeng">
+        <item>・－</item>
+        <item>－・・・</item>
+        <item>－・－・</item>
+        <item>－・・</item>
+        <item>・</item>
+        <item>・・－・</item>
+        <item>－－・</item>
+        <item>・・・・</item>
+        <item>・・</item>
+        <item>・－－－</item>
+        <item>－・－</item>
+        <item>・－・・</item>
+        <item>－－</item>
+        <item>－・</item>
+        <item>－－－</item>
+        <item>・－－・</item>
+        <item>－－・－</item>
+        <item>・－・</item>
+        <item>・・・</item>
+        <item>－</item>
+        <item>・・－</item>
+        <item>・・・－</item>
+        <item>・－－</item>
+        <item>－・・－</item>
+        <item>－・－－</item>
+        <item>－－・・</item>
+    </string-array>
+    <string-array name="plaineng">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>E</item>
+        <item>F</item>
+        <item>G</item>
+        <item>H</item>
+        <item>I</item>
+        <item>J</item>
+        <item>K</item>
+        <item>L</item>
+        <item>M</item>
+        <item>N</item>
+        <item>O</item>
+        <item>P</item>
+        <item>Q</item>
+        <item>R</item>
+        <item>S</item>
+        <item>T</item>
+        <item>U</item>
+        <item>V</item>
+        <item>W</item>
+        <item>X</item>
+        <item>Y</item>
+        <item>Z</item>
+    </string-array>
+    <string-array name="morsecom">
+        <item>・－－－－</item>
+        <item>・・－－－</item>
+        <item>・・・－－</item>
+        <item>・・・・－</item>
+        <item>・・・・・</item>
+        <item>－・・・・</item>
+        <item>－－・・・</item>
+        <item>－－－・・</item>
+        <item>－－－－・</item>
+        <item>－－－－－</item>
+        <item>・－・－・－</item>
+        <item>－－・・－－</item>
+        <item>・・－－・・</item>
+        <item>－・－・－－</item>
+        <item>－・・・・－</item>
+        <item>・－－・－・</item>
+        <item>・－・・－・</item>
+    </string-array>
+    <string-array name="plaincom">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>0</item>
+        <item>.</item>
+        <item>,</item>
+        <item>？</item>
+        <item>！</item>
+        <item>-</item>
+        <item>＠</item>
+        <item>"</item>
     </string-array>
 </resources>
