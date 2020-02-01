@@ -20,6 +20,7 @@
     <string name="allow_left">←</string>
     <string name="radio_jp">日本語(ひらがな)</string>
     <string name="radio_eng">Alphabet</string>
+    <string name="common">共通</string>
     <string name="noStringAndKey">文字列と鍵を入力してください</string>
     <string name="noString">文字列を入力してください</string>
     <string name="noKey">鍵を入力してください</string>

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioButton;
 
@@ -15,7 +16,8 @@ import android.widget.RadioButton;
 
 public class ShowMorseCode extends Activity{
     private ScrollView sv;
-    private TextView tv;
+    private LinearLayout llHead, llCont;
+    private TextView tvHead, tvJp, tvEng, tvCom;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -26,8 +28,31 @@ public class ShowMorseCode extends Activity{
         sv = new ScrollView(this);
         sv.setLayoutParams(new ScrollView.LayoutParams(matchParent, matchParent));
 
-        tv = new TextView(this);
-        tv.setLayoutParams(new ScrollView.LayoutParams(matchParent, wrapContent));
+        llHead = new LinearLayout(this);
+        llHead.setLayoutParams(new LinearLayout.LayoutParams(matchParent, matchParent));
+        llHead.setOrientation(LinearLayout.VERTICAL);
+        llCont = new LinearLayout(this);
+        llCont.setLayoutParams(new LinearLayout.LayoutParams(matchParent, matchParent));
+        llCont.setOrientation(LinearLayout.HORIZONTAL);
+
+        tvHead = new TextView(this);
+        tvHead.setLayoutParams(new LinearLayout.LayoutParams(matchParent, matchParent));
+        tvHead.setTextSize(22);
+        tvHead.setText("モールス符号対応表\n");
+        tvJp = new TextView(this);
+        tvJp.setLayoutParams(new LinearLayout.LayoutParams(matchParent, matchParent, 1));
+        tvJp.setPadding(15, 0, 0, 0);
+        tvJp.setText(getString(R.string.radio_jp) + "\n");
+        tvJp.setTextSize(16);
+        tvEng = new TextView(this);
+        tvEng.setLayoutParams(new LinearLayout.LayoutParams(matchParent, matchParent, 2));
+        tvEng.setText(getString(R.string.radio_eng) + "\n");
+        tvEng.setTextSize(16);
+        tvCom = new TextView(this);
+        tvCom.setLayoutParams(new LinearLayout.LayoutParams(matchParent, matchParent));
+        tvCom.setPadding(20, 0, 0, 0);
+        tvCom.setText(getString(R.string.common) + "\n");
+        tvCom.setTextSize(16);
 
         String[] plain = getResources().getStringArray(R.array.plainjp);
         String[] morse = getResources().getStringArray(R.array.morsejp);
@@ -42,16 +67,29 @@ public class ShowMorseCode extends Activity{
 //            entry = itr.next();
 //            tv.append(entry.getKey() + ": " + entry.getValue() + "\n");
 //        }
-        tv.setText("モールス符号対応表\n");
+
         for(int i=0; i < morse.length; i++)
-            tv.append(plain[i] + ": " + morse[i] + "\n");
+            tvJp.append(plain[i] + "： " + morse[i] + "\n");
+
+        plain = getResources().getStringArray(R.array.plaineng);
+        morse = getResources().getStringArray(R.array.morseeng);
+        for(int i=0; i < morse.length; i++)
+            tvEng.append(plain[i] + "： " + morse[i] + "\n");
+
 
         plain = getResources().getStringArray(R.array.plaincom);
         morse = getResources().getStringArray(R.array.morsecom);
         for(int i=0; i < morse.length; i++)
-            tv.append(plain[i] + ": " + morse[i] + "\n");
+            tvCom.append(plain[i] + "： " + morse[i] + "\n");
 
-        sv.addView(tv);
+        llCont.addView(tvJp);
+        llCont.addView(tvEng);
+
+        llHead.addView(tvHead);
+        llHead.addView(llCont);
+        llHead.addView(tvCom);
+
+        sv.addView(llHead);
         setContentView(sv);
     }
 }

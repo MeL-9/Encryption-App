@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.Character.UnicodeBlock;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.ClipboardManager;
 import android.content.ClipData;
@@ -91,6 +92,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mode = isChecked;
+                if(mode == true){
+                    linearLayout = findViewById(R.id.putMorse);
+                    linearLayout.setVisibility(View.VISIBLE);
+                }else{
+                    linearLayout = findViewById(R.id.putMorse);
+                    linearLayout.setVisibility(View.GONE);
+                }
                 String tmp = etStr.getText().toString();
                 etStr.setText(tmp);
             }
@@ -145,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             tst.show();
                         }else{
                             int key = Integer.parseInt(etN.getText().toString());
-                            Kaeji kj = new Kaeji(plainStr, key, 1, 0);
+                            Kaeji kj = new Kaeji(plainStr, key, 1, lang);
                             kj.encry();
                             tvCrypt.setTextSize(20);
                             cryptStr = kj.outPut();
@@ -162,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         tst.show();
                         }else{
                             int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
-                            Kaeji kj = new Kaeji(plainStr, key, 0, 0);     //暗号化するメソッドを持つクラスを定義
+                            Kaeji kj = new Kaeji(plainStr, key, 0, lang);     //暗号化するメソッドを持つクラスを定義
                             kj.encry();         //暗号化メソッド実行
                             tvCrypt.setTextSize(20);
                             cryptStr = kj.outPut();     //暗号化結果を取得
@@ -249,11 +257,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if(num == 0){
-                    linearLayout = findViewById(R.id.putMorse);
-                    linearLayout.setVisibility(View.VISIBLE);
+                    if(mode == true){
+                        linearLayout = findViewById(R.id.putMorse);
+                        linearLayout.setVisibility(View.VISIBLE);
+                    }
                 }else{
                     linearLayout = findViewById(R.id.putMorse);
-                    linearLayout.setVisibility(View.INVISIBLE);
+                    linearLayout.setVisibility(View.GONE);
                 }
                 String tmp = etStr.getText().toString();
                 etStr.setText(tmp);
@@ -374,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     class Kaeji extends Encode{
         int key;
+        List<String> listTable;
 
         Kaeji(){ this("", 0, 0, 0); }   //コンストラクタ
         Kaeji(String plainStr, int key, int mode, int lang){ load(plainStr, key, mode, lang); }
@@ -385,6 +396,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         void load(String plainStr, int key, int mode, int lang){
             super.load(plainStr, mode, lang);
             setKey(key);
+            String[] plain = null;
+            String[] com = null;
+            if(lang == 0)plain = getResources().getStringArray(R.array.plainjp);
+            else if(lang == 1)plain = getResources().getStringArray(R.array.plaineng);
+            com = getResources().getStringArray(R.array.plaincom);
+
+            String[] table = new String[plain.length + com.length ];
+            System.arraycopy(plain, 0, table, 0, plain.length);
+            System.arraycopy(com, 0, table, plain.length, com.length);
+
+            listTable = Arrays.asList(table);
         }
 
         @Override
@@ -392,40 +414,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             crypt.setLength(0);     //暗号文の初期化
             char tmp = 0;
             int x = 0;
+            int index = 0;
 
-            while(key > 'ん' - 'ぁ' + 1)    //余計に大きいnを範囲内までカット //'ぁ'　== (char)12353. 'ん' == (char)12435
-                key -= 'ん' - 'ぁ' + 1;
+            while(key > listTable.size() + 1)    //余計に大きいnを範囲内までカット //'ぁ'　== (char)12353. 'ん' == (char)12435
+                key -= listTable.size() + 1;
 
             if(mode == 0){     //暗号化なら
                 for(int i = 0; i < plainStr.length(); i++){    //文字列の長さ分ループ
                     tmp = plainStr.charAt(i);   //文字列を1文字ずつチェックする
-                    x = key;
-                    if(Character.UnicodeBlock.of(tmp) == Character.UnicodeBlock.HIRAGANA) {     //見ている文字がひらがななら
-                        if(tmp + x <= 'ん')
-                            tmp += x;
-                        else {                     //ずらすと'ん'を通り越す場合
-                            x -= 'ん' - tmp + 1;
-                            tmp = 'ぁ';
-                            tmp += x;
+
+                    if(tmp == '!')tmp = '！';    //言語に関わらず一部文字を例外的に置き換える                     /*特別な文字を置き換える部分*/
+                    else if(tmp == '?')tmp = '？';
+                    else if(tmp == '@')tmp = '＠';
+                    if(lang == 0){      //jpの場合特有の処理
+                        if(tmp != 'ー' && Character.UnicodeBlock.of(tmp) == UnicodeBlock.KATAKANA)tmp -= 96;   //見ている文字がカタカナならひらがなへ変換
+                    }else if(lang == 1){        //engの場合特有の処理
+                        if(tmp >= 'a' && tmp <= 'z')tmp -= 32;      //小文字は大文字に変換
+                    }
+
+                    x = key;                                                                                    /*変換部*/
+                    if(listTable.contains(String.valueOf(tmp))) {     //見ている文字が含まれているなら
+                        index = listTable.indexOf(String.valueOf(tmp));
+                        if(index + x < listTable.size())
+                            index += x;
+                        else {                     //ずらすとリストの最後を通り越す場合
+                            x -= listTable.size() - index;
+                            index = 0;
+                            index += x;
                         }
-                    }              //ひらがなでないならそのまま
-                    crypt.append(tmp);
+                    crypt.append(listTable.get(index));
+                    }              //対象でないならそのまま
+                    else crypt.append(tmp);
                 }
             }
             else if(mode == 1){    //復号なら
                 for(int i = 0; i < plainStr.length(); i++){    //文字列の長さ分ループ
                     tmp = plainStr.charAt(i);   //文字列を1文字ずつチェックする
                     x = key;
-                    if(Character.UnicodeBlock.of(tmp) == Character.UnicodeBlock.HIRAGANA) {     //見ている文字がひらがななら
-                        if(tmp - x >= 'ぁ')
-                            tmp -= x;
+                    if(listTable.contains(String.valueOf(tmp))) {     //見ている文字が含まれているなら
+                        index = listTable.indexOf(String.valueOf(tmp));
+                        if(index - x >= 0)
+                            index -= x;
                         else {                     //ずらすと'ぁ'を通り越す場合
-                            x -= tmp - 'ぁ' + 1;
-                            tmp = 'ん';
-                            tmp -= x;
+                            x = x - index - 1;
+                            index = listTable.size() - 1;
+                            index -= x;
                         }
-                    }              //ひらがなでないならそのまま
-                    crypt.append(tmp);
+                    crypt.append(listTable.get(index));
+                    }              //対象でないならそのまま
+                    else crypt.append(tmp);
                 }
             }
         }

@@ -36,7 +36,7 @@
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:radius">5dp</item>
         <item name="android:background">@drawable/button_ripple</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:textColor">#F0F0F0</item>
         <item name="android:layout_weight">1</item>
     </style>
