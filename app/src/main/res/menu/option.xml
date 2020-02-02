@@ -3,16 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_hiragana"
-        android:title="@string/available"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/menu_code"
         android:title="@string/list_code"
-        />
-    <item
-        android:id="@+id/menu_morse"
-        android:title="@string/about_morse"
         />
     <item
         android:id="@+id/menu_history"

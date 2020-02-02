@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.lang.Character.UnicodeBlock;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.ClipboardManager;
 import android.content.ClipData;
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Button btCpy, btFil, btShortPoint, btLongPoint, btSpace, btBS;
     private EditText etStr, etN;
-    private Spinner spnrEncry;
+    private Spinner spnrMethod;
     private TextView tvCrypt, cross;
     private CompoundButton swMode;
     private RadioGroup rdLang;
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btBS = findViewById(idBS);
         etStr = findViewById(R.id.et_str);
         etN = findViewById(R.id.n_kaeji);
-        spnrEncry = findViewById(R.id.spinner);
+        spnrMethod = findViewById(R.id.spinner);
         tvCrypt = findViewById(R.id.tv_crypt);
         cross = findViewById(R.id.cross);
         swMode = findViewById(R.id.sw_mode);
@@ -92,10 +91,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mode = isChecked;
-                if(mode == true){
-                    linearLayout = findViewById(R.id.putMorse);
-                    linearLayout.setVisibility(View.VISIBLE);
-                }else{
+                if(mode){   //復号モードになったとき
+                    if(spnrMethod.getSelectedItemPosition() == 0){  //スピナーでモールスが選ばれているなら
+                        linearLayout = findViewById(R.id.putMorse);
+                        linearLayout.setVisibility(View.VISIBLE);
+                    }
+                }else{  //暗号化モードになったとき
                     linearLayout = findViewById(R.id.putMorse);
                     linearLayout.setVisibility(View.GONE);
                 }
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     cross.startAnimation(fadeIn);
                     flgCross = true;
                 }
-                int item = spnrEncry.getSelectedItemPosition();    //選択されている方式を取得
+                int item = spnrMethod.getSelectedItemPosition();    //選択されている方式を取得
 
                 if(item == 1)  {        //換字式なら
                     if(mode){       //復号なら
@@ -240,23 +241,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ArrayAdapter adptEncry = new ArrayAdapter(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.list_encry));
         adptEncry.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        spnrEncry.setAdapter(adptEncry);  //AdapterをSpinnerにセット
-        spnrEncry.setPromptId(R.string.sel_encry);
-        spnrEncry.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {     //SpinnerのItemが選ばれたとき
+        spnrMethod.setAdapter(adptEncry);  //AdapterをSpinnerにセット
+        spnrMethod.setPromptId(R.string.sel_encry);
+        spnrMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {     //SpinnerのItemが選ばれたとき
             @Override
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
                 Spinner spnr = (Spinner)parent;
                 int num = spnr.getSelectedItemPosition();
-                if(num == 1){
+                if(num == 1){                                    //換字式が選ばれているなら
                     linearLayout = findViewById(R.id.key_kaeji);
-                    linearLayout.setVisibility(View.VISIBLE);    //換字式が選ばれているならずらす数のEditTextをVisible
+                    linearLayout.setVisibility(View.VISIBLE);    //ずらす数のEditTextをVisible
                 }
                 else {
                     linearLayout = findViewById(R.id.key_kaeji);
                     linearLayout.setVisibility(View.GONE);
                 }
 
-                if(num == 0){
+                if(num == 0){                                   //モールスが選ばれているなら
                     if(mode == true){
                         linearLayout = findViewById(R.id.putMorse);
                         linearLayout.setVisibility(View.VISIBLE);
@@ -290,31 +291,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent;
 
         switch (menuItem.getItemId()){
-            case R.id.menu_hiragana:
-                dlg.setTitle(R.string.available);
-                dlg.setMessage(R.string.hiragana);
-                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dlg, int which) {
-                    }
-                });
-                dlg.show();
-                break;
-
             case R.id.menu_code:
                 intent = new Intent(this, ShowMorseCode.class);
                 startActivity(intent);
-                break;
-
-            case R.id.menu_morse:
-                dlg.setTitle(R.string.about_morse);
-                dlg.setMessage(R.string.explain_morse);
-                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                dlg.show();
                 break;
 
             case R.id.menu_history:
