@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.*;
@@ -26,7 +27,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private Button btCpy, btFil, btShortPoint, btLongPoint, btSpace, btBS;
+    private Button btShortPoint, btLongPoint, btSpace, btBS;
+    private ImageButton btCpy, btFil, btPoint;
     private EditText etStr, etN;
     private Spinner spnrMethod;
     private TextView tvCrypt, cross;
@@ -39,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout linearLayout, resultLayout;
 
     private String plainStr, cryptStr;
-    private boolean mode;
+    private boolean mode, twoButton;
 
-    private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil,
+    private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil, idPoint = R.id.bt_point, idTwo = R.id.bt_two,
             idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,idBS = R.id.bt_bs;
     private int lang;
 
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btLongPoint = findViewById(idLongPoint);
         btSpace = findViewById(idSpace);
         btBS = findViewById(idBS);
+        btPoint = findViewById(idPoint);
         etStr = findViewById(R.id.et_str);
         etN = findViewById(R.id.n_kaeji);
         spnrMethod = findViewById(R.id.spinner);
@@ -67,14 +70,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swMode = findViewById(R.id.sw_mode);
         rdLang = findViewById(R.id.radio_lang);
         mode = false;
+        twoButton = false;
         lang = 0;
 
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
-        btShortPoint.setOnClickListener(this);
-        btLongPoint.setOnClickListener(this);
         btSpace.setOnClickListener(this);
         btBS.setOnClickListener(this);
+
+        if(twoButton){
+            btPoint.setVisibility(View.GONE);
+            linearLayout = findViewById(idTwo);
+            linearLayout.setVisibility(View.VISIBLE);
+        }
+
+        btPoint.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                long time = 0, ref = 250;
+
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_active));
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_pointbutton));
+                        time = event.getEventTime() - event.getDownTime();
+                        if(time < ref){ etStr.append("・"); }
+                        else if(time >= ref){ etStr.append("ー"); }
+                        return true;
+                }
+                return false;
+            }
+        });
 
         rdLang.check(R.id.radio_jp);
         rdLang.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
