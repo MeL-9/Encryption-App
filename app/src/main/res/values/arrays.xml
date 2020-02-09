@@ -5,91 +5,91 @@
         <item>@string/kaeji</item>
     </string-array>
     <string-array name="morsejp">
-        <item>－－・－－ ・・－－・</item>
-        <item>－－・－－</item>
-        <item>・－ ・・－－・</item>
-        <item>・－</item>
-        <item>・・－ ・・－－・</item>
-        <item>・・－</item>
-        <item>・・－ ・・</item>
-        <item>－・－－－ ・・－－・</item>
-        <item>－・－－－</item>
-        <item>・－・・・ ・・－－・</item>
-        <item>・－・・・</item>
-        <item>・－・・</item>
-        <item>・－・・ ・・</item>
-        <item>－・－・・</item>
-        <item>－・－・・ ・・</item>
-        <item>・・・－</item>
-        <item>・・・－ ・・</item>
-        <item>－・－－</item>
-        <item>－・－－ ・・</item>
+        <item>－－･－－ ･･－－･</item>
+        <item>－－･－－</item>
+        <item>･－ ･･－－･</item>
+        <item>･－</item>
+        <item>･･－ ･･－－･</item>
+        <item>･･－</item>
+        <item>･･－ ･･</item>
+        <item>－･－－－ ･･－－･</item>
+        <item>－･－－－</item>
+        <item>･－･･･ ･･－－･</item>
+        <item>･－･･･</item>
+        <item>･－･･</item>
+        <item>･－･･ ･･</item>
+        <item>－･－･･</item>
+        <item>－･－･･ ･･</item>
+        <item>･･･－</item>
+        <item>･･･－ ･･</item>
+        <item>－･－－</item>
+        <item>－･－－ ･･</item>
         <item>－－－－</item>
-        <item>－－－－ ・・</item>
-        <item>－・－・－</item>
-        <item>－・－・－ ・・</item>
-        <item>－－・－・</item>
-        <item>－－・－・ ・・</item>
-        <item>－－－・－</item>
-        <item>－－－・－ ・・</item>
-        <item>・－－－・</item>
-        <item>・－－－・ ・・</item>
-        <item>－－－・</item>
-        <item>－－－・ ・・</item>
-        <item>－・</item>
-        <item>－・ ・・</item>
-        <item>・・－・</item>
-        <item>・・－・ ・・</item>
-        <item>・－－・ ・・－－・</item>
-        <item>・－－・</item>
-        <item>・－－・ ・・</item>
-        <item>・－・－－</item>
-        <item>・－・－－ ・・</item>
-        <item>・・－・・</item>
-        <item>・・－・・ ・・</item>
-        <item>・－・</item>
-        <item>－・－・</item>
-        <item>・・・・</item>
-        <item>－－・－</item>
-        <item>・・－－</item>
-        <item>－・・・</item>
-        <item>－・・・ ・・</item>
-        <item>－・・・ ・・－－・</item>
-        <item>－－・・－</item>
-        <item>－－・・－ ・・</item>
-        <item>－－・・－ ・・－－・</item>
-        <item>－－・・</item>
-        <item>－－・・ ・・</item>
-        <item>－－・・ ・・－－・</item>
-        <item>・</item>
-        <item>・ ・・</item>
-        <item>・ ・・－－・</item>
-        <item>－・・</item>
-        <item>－・・ ・・</item>
-        <item>－・・ ・・－－・</item>
-        <item>－・・－</item>
-        <item>・・－・－</item>
+        <item>－－－－ ･･</item>
+        <item>－･－･－</item>
+        <item>－･－･－ ･･</item>
+        <item>－－･－･</item>
+        <item>－－･－･ ･･</item>
+        <item>－－－･－</item>
+        <item>－－－･－ ･･</item>
+        <item>･－－－･</item>
+        <item>･－－－･ ･･</item>
+        <item>－－－･</item>
+        <item>－－－･ ･･</item>
+        <item>－･</item>
+        <item>－･ ･･</item>
+        <item>･･－･</item>
+        <item>･･－･ ･･</item>
+        <item>･－－･ ･･－－･</item>
+        <item>･－－･</item>
+        <item>･－－･ ･･</item>
+        <item>･－･－－</item>
+        <item>･－･－－ ･･</item>
+        <item>･･－･･</item>
+        <item>･･－･･ ･･</item>
+        <item>･－･</item>
+        <item>－･－･</item>
+        <item>････</item>
+        <item>－－･－</item>
+        <item>･･－－</item>
+        <item>－･･･</item>
+        <item>－･･･ ･･</item>
+        <item>－･･･ ･･－－･</item>
+        <item>－－･･－</item>
+        <item>－－･･－ ･･</item>
+        <item>－－･･－ ･･－－･</item>
+        <item>－－･･</item>
+        <item>－－･･ ･･</item>
+        <item>－－･･ ･･－－･</item>
+        <item>･</item>
+        <item>･ ･･</item>
+        <item>･ ･･－－･</item>
+        <item>－･･</item>
+        <item>－･･ ･･</item>
+        <item>－･･ ･･－－･</item>
+        <item>－･･－</item>
+        <item>･･－･－</item>
         <item>－</item>
-        <item>－・・・－</item>
-        <item>－・・－・</item>
-        <item>・－－ ・・－－・</item>
-        <item>・－－</item>
-        <item>－・・－－ ・・－－・</item>
-        <item>－・・－－</item>
-        <item>－－ ・・－－・</item>
+        <item>－･･･－</item>
+        <item>－･･－･</item>
+        <item>･－－ ･･－－･</item>
+        <item>･－－</item>
+        <item>－･･－－ ･･－－･</item>
+        <item>－･･－－</item>
+        <item>－－ ･･－－･</item>
         <item>－－</item>
-        <item>・・・</item>
-        <item>－－・</item>
-        <item>－・－－・</item>
+        <item>･･･</item>
+        <item>－－･</item>
+        <item>－･－－･</item>
         <item>－－－</item>
-        <item>・－・－</item>
-        <item>－・－ ・・－－・</item>
-        <item>－・－</item>
-        <item>・－・・－</item>
-        <item>・－－・・</item>
-        <item>・－－－</item>
-        <item>・－・－・</item>
-        <item>・－－・－</item>
+        <item>･－･－</item>
+        <item>－･－ ･･－－･</item>
+        <item>－･－</item>
+        <item>･－･･－</item>
+        <item>･－－･･</item>
+        <item>･－－－</item>
+        <item>･－･－･</item>
+        <item>･－－･－</item>
     </string-array>
     <string-array name="plainjp">
         <item>ぁ</item>
@@ -179,32 +179,32 @@
         <item>ー</item>
     </string-array>
     <string-array name="morseeng">
-        <item>・－</item>
-        <item>－・・・</item>
-        <item>－・－・</item>
-        <item>－・・</item>
-        <item>・</item>
-        <item>・・－・</item>
-        <item>－－・</item>
-        <item>・・・・</item>
-        <item>・・</item>
-        <item>・－－－</item>
-        <item>－・－</item>
-        <item>・－・・</item>
+        <item>･－</item>
+        <item>－･･･</item>
+        <item>－･－･</item>
+        <item>－･･</item>
+        <item>･</item>
+        <item>･･－･</item>
+        <item>－－･</item>
+        <item>････</item>
+        <item>･･</item>
+        <item>･－－－</item>
+        <item>－･－</item>
+        <item>･－･･</item>
         <item>－－</item>
-        <item>－・</item>
+        <item>－･</item>
         <item>－－－</item>
-        <item>・－－・</item>
-        <item>－－・－</item>
-        <item>・－・</item>
-        <item>・・・</item>
+        <item>･－－･</item>
+        <item>－－･－</item>
+        <item>･－･</item>
+        <item>･･･</item>
         <item>－</item>
-        <item>・・－</item>
-        <item>・・・－</item>
-        <item>・－－</item>
-        <item>－・・－</item>
-        <item>－・－－</item>
-        <item>－－・・</item>
+        <item>･･－</item>
+        <item>･･･－</item>
+        <item>･－－</item>
+        <item>－･･－</item>
+        <item>－･－－</item>
+        <item>－－･･</item>
     </string-array>
     <string-array name="plaineng">
         <item>A</item>
@@ -235,23 +235,23 @@
         <item>Z</item>
     </string-array>
     <string-array name="morsecom">
-        <item>・－－－－</item>
-        <item>・・－－－</item>
-        <item>・・・－－</item>
-        <item>・・・・－</item>
-        <item>・・・・・</item>
-        <item>－・・・・</item>
-        <item>－－・・・</item>
-        <item>－－－・・</item>
-        <item>－－－－・</item>
+        <item>･－－－－</item>
+        <item>･･－－－</item>
+        <item>･･･－－</item>
+        <item>････－</item>
+        <item>･････</item>
+        <item>－････</item>
+        <item>－－･･･</item>
+        <item>－－－･･</item>
+        <item>－－－－･</item>
         <item>－－－－－</item>
-        <item>・－・－・－</item>
-        <item>－－・・－－</item>
-        <item>・・－－・・</item>
-        <item>－・－・－－</item>
-        <item>－・・・・－</item>
-        <item>・－－・－・</item>
-        <item>・－・・－・</item>
+        <item>･－･－･－</item>
+        <item>－－･･－－</item>
+        <item>･･－－･･</item>
+        <item>－･－･－－</item>
+        <item>－････－</item>
+        <item>･－－･－･</item>
+        <item>･－･･－･</item>
     </string-array>
     <string-array name="plaincom">
         <item>1</item>

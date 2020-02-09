@@ -10,7 +10,9 @@ import java.util.Map;
 
 import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,6 +26,7 @@ import android.widget.*;
 import android.content.Intent;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -70,14 +73,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swMode = findViewById(R.id.sw_mode);
         rdLang = findViewById(R.id.radio_lang);
         mode = false;
-        twoButton = false;
         lang = 0;
 
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
+        btShortPoint.setOnClickListener(this);
+        btLongPoint.setOnClickListener(this);
         btSpace.setOnClickListener(this);
         btBS.setOnClickListener(this);
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        twoButton = pref.getBoolean("twobtn_key", false);
         if(twoButton){
             btPoint.setVisibility(View.GONE);
             linearLayout = findViewById(idTwo);
@@ -87,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btPoint.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                long time = 0, ref = 250;
+                long time = 0, ref = 200;
 
                 switch (event.getAction()){
                     case MotionEvent.ACTION_DOWN:
@@ -96,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     case MotionEvent.ACTION_UP:
                         btPoint.setBackground(getResources().getDrawable(R.drawable.round_pointbutton));
                         time = event.getEventTime() - event.getDownTime();
-                        if(time < ref){ etStr.append("・"); }
-                        else if(time >= ref){ etStr.append("ー"); }
+                        if(time < ref){ etStr.append("･"); }
+                        else if(time >= ref){ etStr.append("－"); }
                         return true;
                 }
                 return false;
@@ -328,6 +334,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent = new Intent(this, ShowHistory.class);
                 intent.putExtra("com.lune.encipher.arrayHistory", arrayHistory);
                 startActivity(intent);
+                break;
+            case R.id.menu_pref:
+                dlg.setTitle(R.string.pref);
+                dlg.setMessage(R.string.pref_alart);
+                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, Setting.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dlg.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dlg.show();
+                break;
         }
         return true;
     }
@@ -350,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         else if(id == idFil){ etStr.setText(tvCrypt.getText());}
-        else if(id == idShortpoint){ etStr.append("・"); }
+        else if(id == idShortpoint){ etStr.append("･"); }
         else if(id == idLongPoint){ etStr.append("－");}
         else if(id == idSpace){ etStr.append(" ");}
         else if(id == idBS){

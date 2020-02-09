@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="@string/pref"
+    android:key="preference_root">
+    <PreferenceCategory
+        android:title="@string/reboot"
+        android:key="morse_key">
+
+        <SwitchPreference
+            android:key="twobtn_key"
+            android:title="@string/pref_twobtn"
+            android:summary="@string/sum_twobtn"/>
+    </PreferenceCategory>
+</PreferenceScreen>
