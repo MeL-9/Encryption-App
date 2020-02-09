@@ -4,227 +4,270 @@
     android:orientation="vertical"
     android:background="#F0F0F0">
 
-<!--    <TextView-->
-<!--        style="@style/titleTheme"-->
-<!--        android:text="@string/cipher" />-->
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@drawable/rounded_corner_8dp"
-        android:backgroundTint="#F0F0F0"
-        android:elevation="6dp"
-        android:orientation="vertical">
-
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/string_cipher"-->
-<!--            android:textColor="#000"></TextView>-->
-
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/et_str"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:gravity="top"
-                android:layout_marginRight="40dp"
-                android:layout_marginBottom="10dp"
-                android:inputType="textMultiLine"
-                android:textSize="20dp"
-                android:hint="@string/hint_str"/>
-
-            <TextView
-                android:id="@+id/cross"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_gravity="right"
-                android:clickable="true"
-                android:onClick="clearCross"
-                android:textSize="30dp"
-                android:text="×"/>
-        </FrameLayout>
-
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/rounded_corner_4dp"
+                android:backgroundTint="#F0F0F0"
+                android:elevation="6dp"
                 android:orientation="vertical">
 
-                <Spinner
-                    android:id="@+id/spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <RadioGroup
-                    android:id="@+id/radioMode"
-                    android:layout_width="wrap_content"
+                    <EditText
+                        android:id="@+id/et_str"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:gravity="top"
+                        android:layout_marginRight="40dp"
+                        android:layout_marginBottom="10dp"
+                        android:inputType="textMultiLine"
+                        android:textSize="20dp"
+                        android:hint="@string/hint_str" />
+
+                    <TextView
+                        android:id="@+id/cross"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_gravity="right"
+                        android:clickable="true"
+                        android:onClick="clearCross"
+                        android:textSize="30dp"
+                        android:text="×"/>
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="5dp">
+                    android:orientation="vertical">
 
-                    <RadioButton
-                        android:id="@+id/radioEncry"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/encrypt" />
-                    <RadioButton
-                        android:id="@+id/radioDecry"
-                        android:layout_width="wrap_content"
+                        android:orientation="horizontal">
+
+                        <Spinner
+                            android:id="@+id/spinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/normalText"
+                                android:text="@string/encrypt"/>
+                            <Switch
+                                android:id="@+id/sw_mode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="8dp"
+                                android:thumbTint="@color/colorPrimary"
+                                android:trackTint="@color/colorResultButton"
+                                android:checked="false"/>
+                            <TextView
+                                style="@style/normalText"
+                                android:text="@string/decrypt"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/decrypt"/>
-                </RadioGroup>
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/key_kaeji"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="10dp"
+                                android:textSize="18dp"
+                                android:text="@string/key"/>
+                            <EditText
+                                android:id="@+id/n_kaeji"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:background="#D1F6FD"
+                                android:inputType="number"
+                                android:hint="@string/hint_kaeji"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingTop="5dp"
+                            android:orientation="vertical"
+                            android:gravity="center">
+
+                            <RadioGroup
+                                android:id="@+id/radio_lang"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/radio_jp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/radio_jp"
+                                    android:buttonTint="@color/colorPrimary"/>
+                                <RadioButton
+                                    android:id="@+id/radio_eng"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/radio_eng"
+                                    android:buttonTint="@color/colorPrimary"/>
+                            </RadioGroup>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>
 
-            <FrameLayout
+            <LinearLayout
+                android:id="@+id/result"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/rounded_corner_4dp"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/key_kaeji"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
-                    android:visibility="gone">
+                    android:layout_marginLeft="5dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:textSize="18dp"
-                        android:text="@string/key"/>
-                    <EditText
-                        android:id="@+id/n_kaeji"
+                        android:id="@+id/tv_crypt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:background="#D1F6FD"
-                        android:inputType="number"
-                        android:hint="@string/hint_kaeji"/>
-                </LinearLayout>
+                        android:textColor="#F0F0F0"
+                        android:textSize="20dp" />
+
+                </ScrollView>
 
                 <LinearLayout
-                    android:id="@+id/putMorse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
                     android:orientation="horizontal"
-                    android:gravity="center"
-                    android:visibility="gone">
+                    android:layout_margin="5dp"
+                    android:gravity="right">
+
+                    <ImageButton
+                        android:layout_width="40dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/bt_cpy"
+                        android:background="@drawable/res_ripple"
+                        android:layout_margin="3dp"
+                        android:padding="5dp"
+                        android:src="@drawable/copy"
+                        android:scaleType="centerInside" />
+
+                    <ImageButton
+                        android:layout_width="40dp"
+                        android:layout_height="35dp"
+                        android:id="@+id/bt_fil"
+                        android:background="@drawable/res_ripple"
+                        android:layout_margin="3dp"
+                        android:padding="5dp"
+                        android:src="@drawable/fill"
+                        android:scaleType="centerInside"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/putMorse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_margin="5dp"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginLeft="2dp">
 
                     <Button
                         style="@style/morsePutButton"
+                        android:layout_height="wrap_content"
                         android:id="@+id/bt_put_space"
-                        android:text="@string/space"/>
+                        android:text="space"/>
+
+                    <LinearLayout
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/bt_two"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
                     <Button
                         style="@style/morsePutButton"
                         android:id="@+id/bt_put_short"
                         android:text="@string/short_point"/>
-
                     <Button
                         style="@style/morsePutButton"
                         android:id="@+id/bt_put_long"
                         android:text="@string/long_point" />
+
+                    </LinearLayout>
+                    <ImageButton
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:id="@+id/bt_point"
+                        android:background="@drawable/round_pointbutton"
+                        android:src="@drawable/tontsu"
+                        android:scaleType="centerInside"/>
+
                     <Button
                         style="@style/morsePutButton"
+                        android:layout_height="wrap_content"
                         android:id="@+id/bt_bs"
                         android:text="@string/allow_left" />
 
                 </LinearLayout>
-            </FrameLayout>
+
+
+
+            </LinearLayout>
+
         </LinearLayout>
 
-
-    </LinearLayout>
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal">-->
-
-<!--        <Button-->
-<!--            android:id="@+id/bt_encry"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:elevation="20dp"-->
-<!--            android:text="@string/encrypt" />-->
-
-<!--        <Button-->
-<!--            android:id="@+id/bt_decry"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/decrypt"/>-->
-<!--        <Button-->
-<!--            android:id="@+id/bt_clear"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:text="@string/clear" />-->
-
-<!--    </LinearLayout>-->
-
-
-    <LinearLayout
-        android:id="@+id/result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="10dp"
-        android:background="@drawable/rounded_corner_8dp"
-        android:orientation="vertical">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp">
-
-            <TextView
-                android:id="@+id/tv_crypt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#F0F0F0"
-                android:textSize="20dp" />
-
-        </ScrollView>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="right">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bt_cpy"
-                android:text="@string/copy_clip"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/bt_fil"
-                android:text="@string/fillin_ue"/>
-        </LinearLayout>
-
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
