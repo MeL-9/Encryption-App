@@ -186,7 +186,7 @@
                         android:layout_width="40dp"
                         android:layout_height="35dp"
                         android:id="@+id/bt_cpy"
-                        android:background="@drawable/res_ripple"
+                        android:background="@drawable/ripple_res"
                         android:layout_margin="3dp"
                         android:padding="5dp"
                         android:src="@drawable/copy"
@@ -196,7 +196,7 @@
                         android:layout_width="40dp"
                         android:layout_height="35dp"
                         android:id="@+id/bt_fil"
-                        android:background="@drawable/res_ripple"
+                        android:background="@drawable/ripple_res"
                         android:layout_margin="3dp"
                         android:padding="5dp"
                         android:src="@drawable/fill"
@@ -224,26 +224,29 @@
                     android:layout_marginLeft="2dp">
 
                     <Button
-                        style="@style/morsePutButton"
-                        android:layout_height="wrap_content"
+                        style="@style/etcPutButton"
                         android:id="@+id/bt_put_space"
-                        android:text="space"/>
+                        android:layout_gravity="bottom"
+                        android:text="space"
+                        android:textSize="20sp"
+                        android:textColor="#A0A0A0"/>
 
                     <LinearLayout
-                    android:layout_width="140dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/bt_two"
-                    android:orientation="horizontal"
-                    android:visibility="gone">
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/bt_two"
+                        android:orientation="horizontal"
+                        android:layout_gravity="bottom"
+                        android:visibility="gone">
 
-                    <Button
-                        style="@style/morsePutButton"
-                        android:id="@+id/bt_put_short"
-                        android:text="@string/short_point"/>
-                    <Button
-                        style="@style/morsePutButton"
-                        android:id="@+id/bt_put_long"
-                        android:text="@string/long_point" />
+                        <Button
+                            style="@style/morsePutButton"
+                            android:id="@+id/bt_put_short"
+                            android:text="@string/short_point"/>
+                        <Button
+                            style="@style/morsePutButton"
+                            android:id="@+id/bt_put_long"
+                            android:text="@string/long_point" />
 
                     </LinearLayout>
                     <ImageButton
@@ -255,10 +258,11 @@
                         android:scaleType="centerInside"/>
 
                     <Button
-                        style="@style/morsePutButton"
-                        android:layout_height="wrap_content"
+                        style="@style/etcPutButton"
                         android:id="@+id/bt_bs"
-                        android:text="@string/allow_left" />
+                        android:text="@string/allow_left"
+                        android:textSize="30sp"
+                        android:textColor="#A0A0A0"/>
 
                 </LinearLayout>
 
