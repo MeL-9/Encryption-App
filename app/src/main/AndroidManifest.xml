@@ -18,6 +18,7 @@
         </activity>
         <activity android:name=".ShowMorseCode"></activity>
         <activity android:name=".ShowHistory"></activity>
+        <activity android:name=".Setting"></activity>
     </application>
 
 </manifest>

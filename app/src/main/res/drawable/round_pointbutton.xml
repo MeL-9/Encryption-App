@@ -4,4 +4,7 @@
     android:shape="oval">
 
     <solid android:color="@color/colorPrimary"/>
+    <stroke
+        android:width="5dp"
+        android:color="@color/colorButton"/>
 </shape>

@@ -28,12 +28,14 @@
     <string name="over">10以上の桁数にはできません</string>
 
 
-    <string name="available">使用可能なひらがな</string>
-    <string name="hiragana">ぁあぃいぅうゔぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ
-                            ただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽ
-                            まみむめもゃやゅゆょよらりるれろゎわゐゑをん</string>
-    <string name="about_morse">ひらがな小文字のモールス符号について</string>
-    <string name="explain_morse">小文字のひらがなは大文字の符号のあとに半角スペースを挟み半濁点の符号(・・－－・)を打ちます</string>
+<!--    menu-->
     <string name="list_code">モールス符号表</string>
     <string name="history">変換履歴</string>
+    <string name="pref">設定</string>
+    <string name="pref_alart">入力中のテキストがクリアされますがよろしいですか？</string>
+    
+    <string name="pref_morse">モールス信号</string>
+    <string name="reboot">アプリを再起動後適用されます</string>
+    <string name="pref_twobtn">2ボタン入力</string>
+    <string name="sum_twobtn">モールス符号の入力ボタンを変更します</string>
 </resources>

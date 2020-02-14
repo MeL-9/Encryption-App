@@ -10,9 +10,12 @@ import java.util.Map;
 
 import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.Menu;
@@ -20,10 +23,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.content.Intent;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -50,6 +55,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ArrayList<String> arrayHistory;
     private boolean flgCross, flgResult;    //表示非表示を切り替える要素のためのフラグ
 
+    public void switchMorse(){
+        linearLayout = findViewById(R.id.putMorse);
+        linearLayout.setVisibility(View.VISIBLE);
+        etStr.setInputType(InputType.TYPE_NULL);
+        try{
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -70,68 +87,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swMode = findViewById(R.id.sw_mode);
         rdLang = findViewById(R.id.radio_lang);
         mode = false;
-        twoButton = false;
         lang = 0;
 
         btCpy.setOnClickListener(this);
         btFil.setOnClickListener(this);
+        btShortPoint.setOnClickListener(this);
+        btLongPoint.setOnClickListener(this);
         btSpace.setOnClickListener(this);
         btBS.setOnClickListener(this);
 
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        twoButton = pref.getBoolean("twobtn_key", false);
         if(twoButton){
             btPoint.setVisibility(View.GONE);
             linearLayout = findViewById(idTwo);
             linearLayout.setVisibility(View.VISIBLE);
         }
-
-        btPoint.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                long time = 0, ref = 250;
-
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_active));
-                        return false;
-                    case MotionEvent.ACTION_UP:
-                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_pointbutton));
-                        time = event.getEventTime() - event.getDownTime();
-                        if(time < ref){ etStr.append("・"); }
-                        else if(time >= ref){ etStr.append("ー"); }
-                        return true;
-                }
-                return false;
-            }
-        });
-
-        rdLang.check(R.id.radio_jp);
-        rdLang.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.radio_jp)lang = 0;
-                else if(checkedId == R.id.radio_eng)lang = 1;
-                String tmp = etStr.getText().toString();
-                etStr.setText(tmp);
-            }
-        });
-
-        swMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mode = isChecked;
-                if(mode){   //復号モードになったとき
-                    if(spnrMethod.getSelectedItemPosition() == 0){  //スピナーでモールスが選ばれているなら
-                        linearLayout = findViewById(R.id.putMorse);
-                        linearLayout.setVisibility(View.VISIBLE);
-                    }
-                }else{  //暗号化モードになったとき
-                    linearLayout = findViewById(R.id.putMorse);
-                    linearLayout.setVisibility(View.GONE);
-                }
-                String tmp = etStr.getText().toString();
-                etStr.setText(tmp);
-            }
-        });
 
         fadeIn = new AlphaAnimation(0.0f, 1.0f);        //FadeInとFadeOutのアニメーション設定
         fadeIn.setDuration(300);
@@ -148,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         flgCross = flgResult = false;
 
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
-        tst.setGravity(Gravity.CENTER|Gravity.CENTER, 0, 0);
+        tst.setGravity(Gravity.CENTER, 0, 0);
+        dlg = new AlertDialog.Builder(this);
 
         etStr.addTextChangedListener(new TextWatcher() {         //入力欄の変更を監視するリスナを追加
             @Override
@@ -160,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable s) {
                 plainStr = s.toString();
-                etStr.setSelection(etStr.length());
+//                etStr.setSelection(etStr.length());
                 if(plainStr.equals("")){
                     if(flgCross && flgResult){
                         cross.startAnimation(fadeOut);
@@ -237,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         arrayHistory.add(plainStr + "→" + cryptStr);
                     }
                 }
-                return;
             }
         });
         etN.addTextChangedListener(new TextWatcher() {
@@ -258,12 +229,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void afterTextChanged(Editable s) {}
         });
 
-        dlg = new AlertDialog.Builder(this);
-
         arrayHistory = new ArrayList<String>(){{
                 add("変換履歴");
             }
         };
+
+        btPoint.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                long time = 0, ref = 200;
+
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_active));
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_pointbutton));
+                        time = event.getEventTime() - event.getDownTime();
+                        if(time < ref){ etStr.append("･"); }
+                        else if(time >= ref){ etStr.append("－"); }
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        swMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mode = isChecked;
+                if(mode){   //復号モードになったとき
+                    if(spnrMethod.getSelectedItemPosition() == 0){  //スピナーでモールスが選ばれているなら
+                        switchMorse();
+                    }
+                }else{  //暗号化モードになったとき
+                    linearLayout = findViewById(R.id.putMorse);
+                    linearLayout.setVisibility(View.GONE);
+                    etStr.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                }
+                String tmp = etStr.getText().toString();
+                etStr.setText(tmp);
+            }
+        });
+
+        rdLang.check(R.id.radio_jp);
+        rdLang.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.radio_jp)lang = 0;
+                else if(checkedId == R.id.radio_eng)lang = 1;
+                String tmp = etStr.getText().toString();
+                etStr.setText(tmp);
+            }
+        });
 
         //Spinnerに使うAdapterの作成
         ArrayAdapter adptEncry = new ArrayAdapter(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.list_encry));
@@ -276,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
                 Spinner spnr = (Spinner)parent;
                 int num = spnr.getSelectedItemPosition();
+                etStr.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 if(num == 1){                                    //換字式が選ばれているなら
                     linearLayout = findViewById(R.id.key_kaeji);
                     linearLayout.setVisibility(View.VISIBLE);    //ずらす数のEditTextをVisible
@@ -286,9 +305,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 if(num == 0){                                   //モールスが選ばれているなら
-                    if(mode == true){
-                        linearLayout = findViewById(R.id.putMorse);
-                        linearLayout.setVisibility(View.VISIBLE);
+                    if(mode == true){   //復号モード
+                        switchMorse();
                     }
                 }else{
                     linearLayout = findViewById(R.id.putMorse);
@@ -328,6 +346,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent = new Intent(this, ShowHistory.class);
                 intent.putExtra("com.lune.encipher.arrayHistory", arrayHistory);
                 startActivity(intent);
+                break;
+            case R.id.menu_pref:
+                dlg.setTitle(R.string.pref);
+                dlg.setMessage(R.string.pref_alart);
+                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, Setting.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dlg.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dlg.show();
+                break;
         }
         return true;
     }
@@ -350,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         else if(id == idFil){ etStr.setText(tvCrypt.getText());}
-        else if(id == idShortpoint){ etStr.append("・"); }
+        else if(id == idShortpoint){ etStr.append("･"); }
         else if(id == idLongPoint){ etStr.append("－");}
         else if(id == idSpace){ etStr.append(" ");}
         else if(id == idBS){
@@ -375,10 +412,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             crypt = new StringBuilder();
         }
 
-        public void setplainStr(String plainStr){ this.plainStr = plainStr; }
-        public void setMode(int mode){ this.mode = mode; }
-        public void setLang(int lang){this.lang = lang;}    //lang: 0 => jp 1 => eng
-        public String getplainStr(){ return plainStr; }
+        void setplainStr(String plainStr){ this.plainStr = plainStr; }
+        void setMode(int mode){ this.mode = mode; }
+        void setLang(int lang){this.lang = lang;}    //lang: 0 => jp 1 => eng
+        String getplainStr(){ return plainStr; }
 
         void load(String plainStr, int mode, int lang){
             setplainStr(plainStr);
@@ -396,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Kaeji(){ this("", 0, 0, 0); }   //コンストラクタ
         Kaeji(String plainStr, int key, int mode, int lang){ load(plainStr, key, mode, lang); }
 
-        public void setKey(int key){
+        void setKey(int key){
             this.key = key;
         }
 
