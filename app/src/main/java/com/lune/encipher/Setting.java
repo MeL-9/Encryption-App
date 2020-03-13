@@ -16,8 +16,8 @@ public class Setting extends AppCompatActivity {
     }
     @Override
     public void onDestroy(){
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(this, MainActivity.class);
+//        startActivity(intent);
         super.onDestroy();
     }
 }

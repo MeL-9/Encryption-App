@@ -18,7 +18,7 @@
     <string name="long_point">－</string>
     <string name="space">空白</string>
     <string name="allow_left">←</string>
-    <string name="radio_jp">日本語(ひらがな)</string>
+    <string name="radio_jp">ひらがな(カタカナ)</string>
     <string name="radio_eng">Alphabet</string>
     <string name="common">共通</string>
     <string name="noStringAndKey">文字列と鍵を入力してください</string>

@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,15 +29,26 @@ import android.widget.*;
 import android.content.Intent;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.preference.PreferenceManager;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+class CustomImageButton extends AppCompatImageButton {
+    public CustomImageButton(Context context, AttributeSet attrs){
+        super(context, attrs);
+    }
+    @Override
+    public boolean performClick(){
+        super.performClick();
+        return true;
+    }
+}
 
-    private Button btShortPoint, btLongPoint, btSpace, btBS;
-    private ImageButton btCpy, btFil, btPoint;
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+    ImageButton cross;
+    private CustomImageButton btPoint;
     private EditText etStr, etN;
     private Spinner spnrMethod;
-    private TextView tvCrypt, cross;
+    private TextView tvCrypt;
     private CompoundButton swMode;
     private RadioGroup rdLang;
 
@@ -48,8 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String plainStr, cryptStr;
     private boolean mode, twoButton;
 
-    private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil, idPoint = R.id.bt_point, idTwo = R.id.bt_two,
-            idShortpoint = R.id.bt_put_short, idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space,idBS = R.id.bt_bs;
+    private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil, idShortpoint = R.id.bt_put_short,
+            idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space, idBS = R.id.bt_bs,
+            idShare = R.id.bt_share;
     private int lang;
 
     private ArrayList<String> arrayHistory;
@@ -72,13 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btCpy = findViewById(idCpy);
-        btFil = findViewById(idFil);
-        btShortPoint = findViewById(idShortpoint);
-        btLongPoint = findViewById(idLongPoint);
-        btSpace = findViewById(idSpace);
-        btBS = findViewById(idBS);
-        btPoint = findViewById(idPoint);
+        btPoint = findViewById(R.id.bt_point);
         etStr = findViewById(R.id.et_str);
         etN = findViewById(R.id.n_kaeji);
         spnrMethod = findViewById(R.id.spinner);
@@ -89,18 +96,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mode = false;
         lang = 0;
 
-        btCpy.setOnClickListener(this);
-        btFil.setOnClickListener(this);
-        btShortPoint.setOnClickListener(this);
-        btLongPoint.setOnClickListener(this);
-        btSpace.setOnClickListener(this);
-        btBS.setOnClickListener(this);
+        findViewById(idShare).setOnClickListener(this);
+        findViewById(idCpy).setOnClickListener(this);
+        findViewById(idFil).setOnClickListener(this);
+        findViewById(idShortpoint).setOnClickListener(this);
+        findViewById(idLongPoint).setOnClickListener(this);
+        findViewById(idSpace).setOnClickListener(this);
+        findViewById(idBS).setOnClickListener(this);
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         twoButton = pref.getBoolean("twobtn_key", false);
         if(twoButton){
             btPoint.setVisibility(View.GONE);
-            linearLayout = findViewById(idTwo);
+            linearLayout = findViewById(R.id.bt_two);
             linearLayout.setVisibility(View.VISIBLE);
         }
 
@@ -121,6 +129,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
         tst.setGravity(Gravity.CENTER, 0, 0);
         dlg = new AlertDialog.Builder(this);
+
+        try{    //Intentから起動した場合
+            Intent intent = getIntent();
+            String action = intent.getAction();
+            if(Intent.ACTION_SEND.equals(action))
+                etStr.setText(intent.getExtras().getCharSequence(Intent.EXTRA_TEXT));
+        }catch (NullPointerException e){
+            etStr.setText("");
+        }
 
         etStr.addTextChangedListener(new TextWatcher() {         //入力欄の変更を監視するリスナを追加
             @Override
@@ -234,24 +251,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         };
 
-        btPoint.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                long time = 0, ref = 200;
+        //Spinnerに使うAdapterの作成
+        ArrayAdapter adptEncry = new ArrayAdapter(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.list_encry));
+        adptEncry.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-                switch (event.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_active));
-                        return false;
-                    case MotionEvent.ACTION_UP:
-                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_pointbutton));
-                        time = event.getEventTime() - event.getDownTime();
-                        if(time < ref){ etStr.append("･"); }
-                        else if(time >= ref){ etStr.append("－"); }
-                        return true;
+        spnrMethod.setAdapter(adptEncry);  //AdapterをSpinnerにセット
+        spnrMethod.setPromptId(R.string.sel_encry);
+        spnrMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {     //SpinnerのItemが選ばれたとき
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                Spinner spnr = (Spinner)parent;
+                int num = spnr.getSelectedItemPosition();
+                etStr.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                if(num == 1){                                    //換字式が選ばれているなら
+                    linearLayout = findViewById(R.id.key_kaeji);
+                    linearLayout.setVisibility(View.VISIBLE);    //ずらす数のEditTextをVisible
                 }
-                return false;
+                else {
+                    linearLayout = findViewById(R.id.key_kaeji);
+                    linearLayout.setVisibility(View.GONE);
+                }
+
+                if(num == 0){                                   //モールスが選ばれているなら
+                    if(mode){   //復号モード
+                        switchMorse();
+                    }
+                }else{
+                    linearLayout = findViewById(R.id.putMorse);
+                    linearLayout.setVisibility(View.GONE);
+                }
+                String tmp = etStr.getText().toString();
+                etStr.setText(tmp);
             }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
         });
 
         swMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -283,40 +316,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        //Spinnerに使うAdapterの作成
-        ArrayAdapter adptEncry = new ArrayAdapter(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.list_encry));
-        adptEncry.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spnrMethod.setAdapter(adptEncry);  //AdapterをSpinnerにセット
-        spnrMethod.setPromptId(R.string.sel_encry);
-        spnrMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {     //SpinnerのItemが選ばれたとき
+        btPoint.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
-                Spinner spnr = (Spinner)parent;
-                int num = spnr.getSelectedItemPosition();
-                etStr.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                if(num == 1){                                    //換字式が選ばれているなら
-                    linearLayout = findViewById(R.id.key_kaeji);
-                    linearLayout.setVisibility(View.VISIBLE);    //ずらす数のEditTextをVisible
-                }
-                else {
-                    linearLayout = findViewById(R.id.key_kaeji);
-                    linearLayout.setVisibility(View.GONE);
-                }
+            public boolean onTouch(View v, MotionEvent event) {
+                long time = 0, ref = 200;
 
-                if(num == 0){                                   //モールスが選ばれているなら
-                    if(mode == true){   //復号モード
-                        switchMorse();
-                    }
-                }else{
-                    linearLayout = findViewById(R.id.putMorse);
-                    linearLayout.setVisibility(View.GONE);
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_active));
+                        return false;
+                    case MotionEvent.ACTION_UP:
+                        btPoint.setBackground(getResources().getDrawable(R.drawable.round_pointbutton));
+                        time = event.getEventTime() - event.getDownTime();
+                        if(time < ref){ etStr.append("･"); }
+                        else{ etStr.append("－"); }
+                        return true;
                 }
-                String tmp = etStr.getText().toString();
-                etStr.setText(tmp);
+                return false;
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
         });
     }
 
@@ -347,24 +364,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra("com.lune.encipher.arrayHistory", arrayHistory);
                 startActivity(intent);
                 break;
-            case R.id.menu_pref:
-                dlg.setTitle(R.string.pref);
-                dlg.setMessage(R.string.pref_alart);
-                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(MainActivity.this, Setting.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-                dlg.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                });
-                dlg.show();
-                break;
+//            case R.id.menu_pref:  //設定表示
+////                dlg.setTitle(R.string.pref);
+////                dlg.setMessage(R.string.pref_alart);
+////                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        Intent intent = new Intent(MainActivity.this, Setting.class);
+////                        startActivity(intent);
+////                        finish();
+////                    }
+////                });
+////                dlg.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                    }
+////                });
+////                dlg.show();
+//                intent = new Intent(MainActivity.this, Setting.class);
+//                startActivity(intent);
+//                break;
         }
         return true;
     }
@@ -372,8 +391,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v){
         int id = v.getId();
+        if(id == idShare){
+            String[] shareTypes = new String[2];
 
-        if(id == idCpy){     //ｸﾘｯﾌﾟﾎﾞｰﾄﾞにｺﾋﾟｰボタンなら
+            shareTypes[0] = "結果のみ";
+            shareTypes[1] = "[元の文] を [結果] に変換しました！";
+
+            dlg.setTitle("共有する内容");
+            dlg.setItems(shareTypes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    String shareText;
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    switch(which){
+                        case 0:
+                            shareText = tvCrypt.getText().toString();
+                            break;
+                        case 1:
+                            shareText = etStr.getText() + " を " + tvCrypt.getText() +
+                                    " に暗号化しました！";
+                            break;
+                        default:
+                            shareText = "";
+                    }
+                    intent.setType("text/plain");
+                    intent.putExtra(Intent.EXTRA_TEXT, shareText);
+                    startActivity(intent);
+                }
+            });
+            dlg.show();
+        }
+        else if(id == idCpy){     //ｸﾘｯﾌﾟﾎﾞｰﾄﾞにｺﾋﾟｰボタンなら
             ClipboardManager cbm = (ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
             if(cbm == null){
                 tst = Toast.makeText(this, "Copy failed.", Toast.LENGTH_SHORT);
@@ -422,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setMode(mode);
             setLang(lang);
         }
-        public String outPut(){ return this.crypt.toString(); }
+        String outPut(){ return this.crypt.toString(); }
         void encry(){ }
     }
 
@@ -443,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String[] plain = null;
             String[] com = null;
             if(lang == 0)plain = getResources().getStringArray(R.array.plainjp);
-            else if(lang == 1)plain = getResources().getStringArray(R.array.plaineng);
+            else /*if(lang == 1)*/plain = getResources().getStringArray(R.array.plaineng);
             com = getResources().getStringArray(R.array.plaincom);
 
             String[] table = new String[plain.length + com.length ];
@@ -569,17 +617,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     crypt.deleteCharAt(crypt.length() - 1);     //最後にも空白が入るので削除
 
             }else if(mode == 1){    //復号なら
-                String sonant = "・・", pSound = "・・－－・";     //濁点半濁点
+                String sonant = "･･", pSound = "･･－－･";     //濁点半濁点
                 List<String> plainList = Arrays.asList(plainStr.split(" ",0));  //空白で区切られている暗号を分割
                 Iterator<Map.Entry<String, String>> itr;
                 Map.Entry<String, String> entry;
 
-                for(int i=0;  i < plainList.size(); i++){
-                    if(plainList.get(i).equals(sonant) || plainList.get(i).equals(pSound)){
-                        if(i > 0)
-                            plainList.set(i - 1, plainList.get(i - 1) +  " " + plainList.get(i));
-                    }
-                }
+                for(int i=0;  i < plainList.size(); i++)    //濁点、半濁点を前の文字と結合
+                    if(i > 0 && (plainList.get(i).equals(sonant) || plainList.get(i).equals(pSound)))
+                            plainList.set(i - 1, plainList.get(i - 1) + " " + plainList.get(i));
+
                 for(String s : plainList){
                     itr = codeTable.entrySet().iterator();
                     while(itr.hasNext()){

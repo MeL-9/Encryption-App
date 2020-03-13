@@ -10,9 +10,9 @@
         android:id="@+id/menu_history"
         android:title="@string/history"
         />
-    <item
-        android:id="@+id/menu_pref"
-        android:title="@string/pref"
-        />
+<!--    <item-->
+<!--        android:id="@+id/menu_pref"-->
+<!--        android:title="@string/pref"-->
+<!--        />-->
 
 </menu>
