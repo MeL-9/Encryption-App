@@ -3,6 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/vibration"
+        android:icon="@drawable/vibration_on"
+        app:showAsAction="always"
+        android:title="@string/vibration"
+        />
+    <item
+        android:id="@+id/flash"
+        android:icon="@drawable/flash_on"
+        app:showAsAction="always"
+        android:title="@string/flash"
+        />
+    <item
+        android:id="@+id/volume"
+        android:icon="@drawable/volume_on"
+        app:showAsAction="always"
+        android:title="@string/volume"
+        />
+    <item
         android:id="@+id/menu_code"
         android:title="@string/list_code"
         />

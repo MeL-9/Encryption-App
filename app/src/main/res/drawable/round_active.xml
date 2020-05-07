@@ -6,5 +6,5 @@
     <solid android:color="@color/colorResultButton"/>
     <stroke
         android:width="5dp"
-        android:color="@color/colorButtonActive"/>
+        android:color="@color/colorResultButton"/>
 </shape>

@@ -13,6 +13,9 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -30,7 +33,6 @@ import android.content.Intent;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.preference.PreferenceManager;
 
 class CustomImageButton extends AppCompatImageButton {
     public CustomImageButton(Context context, AttributeSet attrs){
@@ -44,7 +46,7 @@ class CustomImageButton extends AppCompatImageButton {
 }
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
-    ImageButton cross;
+    private ImageButton cross, btPlay;
     private CustomImageButton btPoint;
     private EditText etStr, etN;
     private Spinner spnrMethod;
@@ -57,16 +59,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Toast tst;
     private LinearLayout linearLayout, resultLayout;
 
+    private ArrayList<String> arrayHistory;
     private String plainStr, cryptStr;
-    private boolean mode, twoButton;
+    private boolean mode, twoButton, vibration, flash, volume;
 
     private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil, idShortpoint = R.id.bt_put_short,
             idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space, idBS = R.id.bt_bs,
-            idShare = R.id.bt_share;
+            idShare = R.id.bt_share, idPlay = R.id.bt_play;
     private int lang;
 
-    private ArrayList<String> arrayHistory;
-    private boolean flgCross, flgResult;    //表示非表示を切り替える要素のためのフラグ
+    private boolean flgCross, flgResult, isPlaying;    //表示非表示を切り替える要素のためのフラグ
 
     public void switchMorse(){
         linearLayout = findViewById(R.id.putMorse);
@@ -81,10 +83,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle saveInstanceState){   //裏に行ったあと、アクティビティを再生成する必要があるときに状態を保持しておく
+        super.onSaveInstanceState(saveInstanceState);
+        saveInstanceState.putString("PlainText", etStr.getText().toString());
+        saveInstanceState.putBoolean("Vibration", vibration);
+        saveInstanceState.putBoolean("Flash", flash);
+        saveInstanceState.putBoolean("Volume", volume);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        btPlay = findViewById(R.id.bt_play);
         btPoint = findViewById(R.id.bt_point);
         etStr = findViewById(R.id.et_str);
         etN = findViewById(R.id.n_kaeji);
@@ -94,8 +107,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         swMode = findViewById(R.id.sw_mode);
         rdLang = findViewById(R.id.radio_lang);
         mode = false;
+        twoButton = false;
+        vibration = flash = volume = false;
         lang = 0;
 
+        if(savedInstanceState != null) {
+            etStr.setText(savedInstanceState.getString("PlainText"));
+            vibration = savedInstanceState.getBoolean("Vibration");
+            flash = savedInstanceState.getBoolean("Flash");
+            volume = savedInstanceState.getBoolean("Volume");
+        }
+        SharedPreferences pref = getSharedPreferences("preference_root", Context.MODE_PRIVATE);
+        twoButton = pref.getBoolean("twoButton", false);
+        etStr.setText(pref.getString("PlainText", ""));
+        vibration = pref.getBoolean("Vibration", false);
+        flash = pref.getBoolean("Flash", false);
+        volume = pref.getBoolean("Volume", false);
+
+        if(twoButton){
+            btPoint.setVisibility(View.GONE);
+            linearLayout = findViewById(R.id.bt_two);
+            linearLayout.setVisibility(View.VISIBLE);
+        }
+
+        btPlay.setOnClickListener(this);
         findViewById(idShare).setOnClickListener(this);
         findViewById(idCpy).setOnClickListener(this);
         findViewById(idFil).setOnClickListener(this);
@@ -103,14 +138,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(idLongPoint).setOnClickListener(this);
         findViewById(idSpace).setOnClickListener(this);
         findViewById(idBS).setOnClickListener(this);
-
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        twoButton = pref.getBoolean("twobtn_key", false);
-        if(twoButton){
-            btPoint.setVisibility(View.GONE);
-            linearLayout = findViewById(R.id.bt_two);
-            linearLayout.setVisibility(View.VISIBLE);
-        }
 
         fadeIn = new AlphaAnimation(0.0f, 1.0f);        //FadeInとFadeOutのアニメーション設定
         fadeIn.setDuration(300);
@@ -124,10 +151,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resultLayout.startAnimation(fadeOut);
         fadeOut.setDuration(300);
 
-        flgCross = flgResult = false;
+        flgCross = flgResult = isPlaying = false;
 
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
-        tst.setGravity(Gravity.CENTER, 0, 0);
+        tst.setGravity(Gravity.CENTER, 0, -170);
         dlg = new AlertDialog.Builder(this);
 
         try{    //Intentから起動した場合
@@ -149,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void afterTextChanged(Editable s) {
                 plainStr = s.toString();
-//                etStr.setSelection(etStr.length());
+
                 if(plainStr.equals("")){
                     if(flgCross && flgResult){
                         cross.startAnimation(fadeOut);
@@ -348,17 +375,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.option, menu);
+
+        MenuItem item = menu.findItem(R.id.vibration);
+        if(vibration)item.setIcon(R.drawable.vibration_on);
+        else item.setIcon(R.drawable.vibration_off);
+
+        item = menu.findItem(R.id.flash);
+        if(flash)item.setIcon(R.drawable.flash_on);
+        else item.setIcon(R.drawable.flash_off);
+
+        item = menu.findItem(R.id.volume);
+        if(volume)item.setIcon(R.drawable.volume_on);
+        else item.setIcon(R.drawable.volume_off);
+
         return true;
     }
     public boolean onOptionsItemSelected(MenuItem menuItem){
         Intent intent;
+        SharedPreferences pref = getSharedPreferences("preference_root", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
 
         switch (menuItem.getItemId()){
+            case R.id.vibration:
+                vibration = !vibration;
+                editor.putBoolean("Vibration", vibration);
+                editor.apply();
+                invalidateOptionsMenu();
+                break;
+            case R.id.flash:
+                flash = !flash;
+                editor.putBoolean("Flash", flash);
+                editor.apply();
+                invalidateOptionsMenu();
+                break;
+            case R.id.volume:
+                volume = !volume;
+                editor.putBoolean("Volume", volume);
+                editor.apply();
+                invalidateOptionsMenu();
+                break;
             case R.id.menu_code:
                 intent = new Intent(this, ShowMorseCode.class);
                 startActivity(intent);
                 break;
-
             case R.id.menu_history:
                 intent = new Intent(this, ShowHistory.class);
                 intent.putExtra("com.lune.encipher.arrayHistory", arrayHistory);
@@ -391,7 +450,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v){
         int id = v.getId();
-        if(id == idShare){
+        if(id == idPlay){
+            if(spnrMethod.getSelectedItemPosition() == 0 && !swMode.isChecked()){   //モールス
+                Thread th = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        playMorse();
+                    }
+                });
+                th.start();
+            }else{
+                tst.setText(R.string.onlyMorse);
+                tst.show();
+            }
+        }
+        else if(id == idShare){
             String[] shareTypes = new String[2];
 
             shareTypes[0] = "結果のみ";
@@ -409,7 +482,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             break;
                         case 1:
                             shareText = etStr.getText() + " を " + tvCrypt.getText() +
-                                    " に暗号化しました！";
+                                    " に変換しました！";
                             break;
                         default:
                             shareText = "";
@@ -446,7 +519,88 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public class Encode{
+    private void waitTime(int time){
+        try{
+            Thread.sleep(time);
+        }catch (InterruptedException e){e.printStackTrace();}
+    }
+    public void playVibration(){
+        String morse = tvCrypt.getText().toString();
+    }
+    public void playFlash(){
+        String morse = tvCrypt.getText().toString();
+    }
+    public void playSound(){
+        String morse = tvCrypt.getText().toString();
+        int sampleRate = 8000;
+        int hz = 720;
+        int duration = 16000;
+
+        double[] shortSamples = new double[duration];
+        short[] shortBuffer = new short[duration];
+
+        for (int i = 0; i < duration; i++) {
+            shortSamples[i] = Math.sin(2 * Math.PI * i * hz / sampleRate);
+            shortBuffer[i] = (short)(shortSamples[i] * Short.MAX_VALUE);
+        }
+        AudioTrack shortAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
+                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_16BIT, shortBuffer.length,
+                AudioTrack.MODE_STATIC);
+        shortAudioTrack.write(shortBuffer, 0, shortBuffer.length);
+
+        for (int i = 0; i < morse.length(); i++) {
+            char currentLetter = morse.charAt(i);
+            if(currentLetter == '･'){
+                shortAudioTrack.play();
+                waitTime(100);
+                shortAudioTrack.stop();
+            }else if(currentLetter == '－'){
+                shortAudioTrack.play();
+                waitTime(300);
+                shortAudioTrack.stop();
+            }else{
+                waitTime(300);
+            }
+            waitTime(100);
+        }
+    }
+
+    public void playMorse(){
+        if(!isPlaying){
+            isPlaying = true;
+            Thread vibTh = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    etStr.setText("ふる");
+                    playVibration();
+                }
+            });
+            Thread flashTh = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    etStr.setText("ぴか");
+                    playFlash();
+                }
+            });
+            Thread soundTh = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    etStr.setText("おと");
+                    playSound();
+                }
+            });
+            if (vibration)
+                vibTh.start();
+            if(flash)
+                flashTh.start();
+            if(volume)
+                soundTh.start();
+            isPlaying = false;
+        }
+    }
+
+    class Encode{
         String plainStr;
         StringBuilder crypt;
         int mode;
