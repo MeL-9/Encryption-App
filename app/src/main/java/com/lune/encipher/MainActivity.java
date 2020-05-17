@@ -519,17 +519,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void waitTime(int time){
+    private void waitTime(int time){    //時間待機
         try{
             Thread.sleep(time);
         }catch (InterruptedException e){e.printStackTrace();}
     }
+
+    /*振動再生メソッド*/
     public void playVibration(){
         String morse = tvCrypt.getText().toString();
     }
+    /*点滅再生メソッド*/
     public void playFlash(){
         String morse = tvCrypt.getText().toString();
     }
+    /*音声再生メソッド*/
     public void playSound(){
         String morse = tvCrypt.getText().toString();
         int sampleRate = 8000;
@@ -539,7 +543,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         double[] shortSamples = new double[duration];
         short[] shortBuffer = new short[duration];
 
-        for (int i = 0; i < duration; i++) {
+        for (int i = 0; i < duration; i++) {    //正弦波生成
             shortSamples[i] = Math.sin(2 * Math.PI * i * hz / sampleRate);
             shortBuffer[i] = (short)(shortSamples[i] * Short.MAX_VALUE);
         }
@@ -551,21 +555,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         for (int i = 0; i < morse.length(); i++) {
             char currentLetter = morse.charAt(i);
-            if(currentLetter == '･'){
+            if(currentLetter == '･'){   //'・'なら0.1秒間再生
                 shortAudioTrack.play();
                 waitTime(100);
                 shortAudioTrack.stop();
             }else if(currentLetter == '－'){
-                shortAudioTrack.play();
+                shortAudioTrack.play(); //'－'なら0.3秒間再生
                 waitTime(300);
                 shortAudioTrack.stop();
             }else{
-                waitTime(300);
+                waitTime(300);  //空白は0.3秒間待機
             }
-            waitTime(100);
+            waitTime(100);  //各要素の間隔0.1秒
         }
     }
-
+    /*モールス再生メソッド*/
     public void playMorse(){
         if(!isPlaying){
             isPlaying = true;
