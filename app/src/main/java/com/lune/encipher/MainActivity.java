@@ -423,26 +423,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 intent.putExtra("com.lune.encipher.arrayHistory", arrayHistory);
                 startActivity(intent);
                 break;
-//            case R.id.menu_pref:  //設定表示
-////                dlg.setTitle(R.string.pref);
-////                dlg.setMessage(R.string.pref_alart);
-////                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-////                    @Override
-////                    public void onClick(DialogInterface dialog, int which) {
-////                        Intent intent = new Intent(MainActivity.this, Setting.class);
-////                        startActivity(intent);
-////                        finish();
-////                    }
-////                });
-////                dlg.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-////                    @Override
-////                    public void onClick(DialogInterface dialog, int which) {
-////                    }
-////                });
-////                dlg.show();
-//                intent = new Intent(MainActivity.this, Setting.class);
-//                startActivity(intent);
-//                break;
+            /*case R.id.menu_pref:  //設定表示
+                dlg.setTitle(R.string.pref);
+                dlg.setMessage(R.string.pref_alart);
+                dlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, Setting.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                dlg.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+                dlg.show();
+                intent = new Intent(MainActivity.this, Setting.class);
+                startActivity(intent);
+                break;*/
         }
         return true;
     }
@@ -576,21 +576,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Thread vibTh = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    etStr.setText("ふる");
+//                    etStr.setText("ふる");
                     playVibration();
                 }
             });
             Thread flashTh = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    etStr.setText("ぴか");
+//                    etStr.setText("ぴか");
                     playFlash();
                 }
             });
             Thread soundTh = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    etStr.setText("おと");
+//                    etStr.setText("おと");
                     playSound();
                 }
             });
