@@ -17,6 +17,8 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -30,9 +32,18 @@ import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import android.content.Intent;
+import android.hardware.camera2.*;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 class CustomImageButton extends AppCompatImageButton {
     public CustomImageButton(Context context, AttributeSet attrs){
@@ -45,7 +56,7 @@ class CustomImageButton extends AppCompatImageButton {
     }
 }
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private ImageButton cross, btPlay;
     private CustomImageButton btPoint;
     private EditText etStr, etN;
@@ -58,17 +69,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private AlphaAnimation fadeIn, fadeOut;
     private Toast tst;
     private LinearLayout linearLayout, resultLayout;
+    private CameraManager cameraManager;
+
+    private AdView mAdView;
 
     private ArrayList<String> arrayHistory;
-    private String plainStr, cryptStr;
-    private boolean mode, twoButton, vibration, flash, volume;
-
+    private String plainStr, cryptStr, idCamera;
     private int idCpy = R.id.bt_cpy, idFil = R.id.bt_fil, idShortpoint = R.id.bt_put_short,
             idLongPoint = R.id.bt_put_long, idSpace = R.id.bt_put_space, idBS = R.id.bt_bs,
             idShare = R.id.bt_share, idPlay = R.id.bt_play;
-    private int lang;
+    private int lang, wg; //lang: 言語判断, wg: スレッド終了待ち用
+    private boolean mode, vibration, flash, volume, stopPlay;  //オンオフのある動作のフラグ
+    private boolean flgCross, flgResult, twoButton;    //表示非表示を切り替える要素のためのフラグ
 
-    private boolean flgCross, flgResult, isPlaying;    //表示非表示を切り替える要素のためのフラグ
 
     public void switchMorse(){
         linearLayout = findViewById(R.id.putMorse);
@@ -95,7 +108,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         btPlay = findViewById(R.id.bt_play);
         btPoint = findViewById(R.id.bt_point);
@@ -108,15 +128,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         rdLang = findViewById(R.id.radio_lang);
         mode = false;
         twoButton = false;
-        vibration = flash = volume = false;
-        lang = 0;
+        vibration = flash = volume = stopPlay = false;
+        idCamera = null;
+        lang = wg = 0;
 
+        /*保存されているデータの読み込み*/
         if(savedInstanceState != null) {
             etStr.setText(savedInstanceState.getString("PlainText"));
             vibration = savedInstanceState.getBoolean("Vibration");
             flash = savedInstanceState.getBoolean("Flash");
             volume = savedInstanceState.getBoolean("Volume");
         }
+        /*設定の読み込み*/
         SharedPreferences pref = getSharedPreferences("preference_root", Context.MODE_PRIVATE);
         twoButton = pref.getBoolean("twoButton", false);
         etStr.setText(pref.getString("PlainText", ""));
@@ -130,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             linearLayout.setVisibility(View.VISIBLE);
         }
 
+        /*buttonのリスナ登録*/
         btPlay.setOnClickListener(this);
         findViewById(idShare).setOnClickListener(this);
         findViewById(idCpy).setOnClickListener(this);
@@ -139,7 +163,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(idSpace).setOnClickListener(this);
         findViewById(idBS).setOnClickListener(this);
 
-        fadeIn = new AlphaAnimation(0.0f, 1.0f);        //FadeInとFadeOutのアニメーション設定
+        /*FadeInとFadeOutのアニメーション設定*/
+        fadeIn = new AlphaAnimation(0.0f, 1.0f);
         fadeIn.setDuration(300);
         fadeIn.setFillAfter(true);
         fadeOut = new AlphaAnimation(1.0f, 0.0f);
@@ -151,11 +176,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         resultLayout.startAnimation(fadeOut);
         fadeOut.setDuration(300);
 
-        flgCross = flgResult = isPlaying = false;
+        flgCross = flgResult = false;
 
         tst = Toast.makeText(this, " ", Toast.LENGTH_SHORT);
         tst.setGravity(Gravity.CENTER, 0, -170);
         dlg = new AlertDialog.Builder(this);
+
+        cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+        cameraManager.registerTorchCallback(new CameraManager.TorchCallback() {
+            @Override
+            public void onTorchModeChanged(@NonNull String cameraId, boolean enabled) {
+                idCamera = cameraId;
+            }
+        }, new Handler());
 
         try{    //Intentから起動した場合
             Intent intent = getIntent();
@@ -177,76 +210,75 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void afterTextChanged(Editable s) {
                 plainStr = s.toString();
 
-                if(plainStr.equals("")){
-                    if(flgCross && flgResult){
+                if (plainStr.equals("")) {
+                    if (flgCross && flgResult) {
                         cross.startAnimation(fadeOut);
                         resultLayout.startAnimation(fadeOut);
                     }
                     flgCross = flgResult = false;
                     return;
                 }
-                if(plainStr.length() >= 1 && !flgCross){    //文字が入力されていればクリアボタンの表示をする
+                if (plainStr.length() >= 1 && !flgCross) {    //文字が入力されていればクリアボタンの表示をする
                     cross.startAnimation(fadeIn);
                     flgCross = true;
                 }
                 int item = spnrMethod.getSelectedItemPosition();    //選択されている方式を取得
 
-                if(item == 1)  {        //換字式なら
-                    if(mode){       //復号なら
-                        if(etN.getText().toString().equals("")){
+                if (item == 1) {        //換字式なら
+                    if (mode) {       //復号なら
+                        if (etN.getText().toString().equals("")) {
                             tst.setText(R.string.noKey);
                             tst.show();
-                        }else{
+                        } else {
                             int key = Integer.parseInt(etN.getText().toString());
                             Kaeji kj = new Kaeji(plainStr, key, 1, lang);
                             kj.encry();
                             tvCrypt.setTextSize(20);
-                            cryptStr = kj.outPut();
+                            cryptStr = kj.getCrypt();
                             tvCrypt.setText(cryptStr);
-                            if(!flgResult){
+                            if (!flgResult) {
                                 resultLayout.startAnimation(fadeIn);
                                 flgResult = true;
                             }
                             arrayHistory.add(plainStr + "→" + cryptStr);
                         }
-                    }else{      //暗号化なら
-                        if(etN.getText().toString().equals("")){        //鍵が空欄なら
-                        tst.setText(R.string.noKey);
-                        tst.show();
-                        }else{
+                    } else {      //暗号化なら
+                        if (etN.getText().toString().equals("")) {        //鍵が空欄なら
+                            tst.setText(R.string.noKey);
+                            tst.show();
+                        } else {
                             int key = Integer.parseInt(etN.getText().toString());    //ずらす数として鍵を読み込み
                             Kaeji kj = new Kaeji(plainStr, key, 0, lang);     //暗号化するメソッドを持つクラスを定義
                             kj.encry();         //暗号化メソッド実行
                             tvCrypt.setTextSize(20);
-                            cryptStr = kj.outPut();     //暗号化結果を取得
+                            cryptStr = kj.getCrypt();     //暗号化結果を取得
                             tvCrypt.setText(cryptStr);      //結果をTextViewにセット
-                            if(!flgResult){     //結果フレームが表示されていなければFadeInさせる
+                            if (!flgResult) {     //結果フレームが表示されていなければFadeInさせる
                                 resultLayout.startAnimation(fadeIn);
-                                 flgResult = true;
+                                flgResult = true;
                             }
-                        arrayHistory.add(plainStr + "→" + cryptStr);    //履歴用のArrayListにadd
                         }
                     }
 
-                }else if(item == 0){          //モールス信号なら
-                    if(mode){       //復号なら
+                } else if (item == 0){          //モールス信号なら
+                    if (mode) {       //復号なら
                         Morse morse = new Morse(plainStr, 1, lang);
                         morse.encry();
                         tvCrypt.setTextSize(20);
-                        cryptStr = morse.outPut();
+                        cryptStr = morse.getCrypt();
                         tvCrypt.setText(cryptStr);
-                        if(!flgResult){
+                        if (!flgResult) {
                             resultLayout.startAnimation(fadeIn);
                             flgResult = true;
                         }
                         arrayHistory.add(plainStr + "→" + cryptStr);
-                    }else{      //暗号化なら
+                    } else {      //暗号化なら
                         Morse morse = new Morse(plainStr, 0, lang);
                         morse.encry();
                         tvCrypt.setTextSize(14);        //モールス符号用にサイズを変更
-                        cryptStr = morse.outPut();
+                        cryptStr = morse.getCrypt();
                         tvCrypt.setText(cryptStr);
-                        if(!flgResult){
+                        if (!flgResult) {
                             resultLayout.startAnimation(fadeIn);
                             flgResult = true;
                         }
@@ -274,8 +306,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         arrayHistory = new ArrayList<String>(){{
-                add("変換履歴");
-            }
+            add("変換履歴");
+        }
         };
 
         //Spinnerに使うAdapterの作成
@@ -364,15 +396,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    public void clearCross(View v){     //×を押したときの処理
-        resultLayout = findViewById(R.id.result);
-        etStr.setText("");
-        tvCrypt.setText("");
-        resultLayout.startAnimation(fadeOut);
-        cross.startAnimation(fadeOut);
-        flgCross = flgResult = false;
-    }
-
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.option, menu);
 
@@ -447,24 +470,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+    public void clearCross(View v){     //×を押したときの処理
+        resultLayout = findViewById(R.id.result);
+        etStr.setText("");
+        tvCrypt.setText("");
+        resultLayout.startAnimation(fadeOut);
+        cross.startAnimation(fadeOut);
+        flgCross = flgResult = false;
+    }
     @Override
     public void onClick(View v){
         int id = v.getId();
-        if(id == idPlay){
-            if(spnrMethod.getSelectedItemPosition() == 0 && !swMode.isChecked()){   //モールス
+        if (id == idPlay) {
+            if (spnrMethod.getSelectedItemPosition() == 0 && !swMode.isChecked()) {   //モールス
                 Thread th = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         playMorse();
                     }
                 });
-                th.start();
-            }else{
+                if (wg == 0) {
+                    wg++;
+                    th.start();
+                } else if (wg == 1) {
+                    stopPlay = true;
+                }
+            } else {
                 tst.setText(R.string.onlyMorse);
                 tst.show();
             }
         }
-        else if(id == idShare){
+        else if (id == idShare) {
             String[] shareTypes = new String[2];
 
             shareTypes[0] = "結果のみ";
@@ -496,23 +532,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else if(id == idCpy){     //ｸﾘｯﾌﾟﾎﾞｰﾄﾞにｺﾋﾟｰボタンなら
             ClipboardManager cbm = (ClipboardManager)this.getSystemService(CLIPBOARD_SERVICE);
-            if(cbm == null){
+            if (cbm == null) {
                 tst = Toast.makeText(this, "Copy failed.", Toast.LENGTH_SHORT);
                 tst.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);
                 tst.show();
-            }else{
+            } else {
                 cbm.setPrimaryClip(ClipData.newPlainText("", tvCrypt.getText().toString()));
                 tst = Toast.makeText(this, "Copied.", Toast.LENGTH_SHORT);
                 tst.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 0);
                 tst.show();
             }
         }
-        else if(id == idFil){ etStr.setText(tvCrypt.getText());}
-        else if(id == idShortpoint){ etStr.append("･"); }
-        else if(id == idLongPoint){ etStr.append("－");}
-        else if(id == idSpace){ etStr.append(" ");}
-        else if(id == idBS){
-            if(etStr.length() > 0){
+        else if (id == idFil) {
+            etStr.setText(tvCrypt.getText());
+            swMode.setChecked(!swMode.isChecked());
+        }
+        else if (id == idShortpoint) { etStr.append("･"); }
+        else if (id == idLongPoint) { etStr.append("－");}
+        else if (id == idSpace) { etStr.append(" ");}
+        else if (id == idBS) {
+            if (etStr.length() > 0) {
                 etStr.setText(etStr.getText().toString().substring(0, etStr.length()-1));
                 etStr.setSelection(etStr.length());
             }
@@ -528,17 +567,56 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /*振動再生メソッド*/
     public void playVibration(){
         String morse = tvCrypt.getText().toString();
+        Vibrator vibrator = (Vibrator)getSystemService(VIBRATOR_SERVICE);
+
+        for (int i = 0; i < morse.length(); i++) {
+            if (stopPlay) break;
+            char currentLetter = morse.charAt(i);
+            if(currentLetter == '･'){   //'・'なら0.1秒間再生
+                vibrator.vibrate(1000);
+                waitTime(100);
+                vibrator.cancel();
+            }else if(currentLetter == '－'){
+                vibrator.vibrate(1000);
+                waitTime(300);
+                vibrator.cancel();
+            }else{
+                waitTime(300);  //空白は0.3秒間待機
+            }
+            waitTime(100);  //各要素の間隔0.1秒
+        }
     }
     /*点滅再生メソッド*/
     public void playFlash(){
         String morse = tvCrypt.getText().toString();
+        try {
+            for (int i = 0; i < morse.length(); i++) {
+                if (stopPlay) break;
+                char currentLetter = morse.charAt(i);
+                if (currentLetter == '･') {   //'・'なら0.1秒間再生
+                    cameraManager.setTorchMode(idCamera, true);
+                    waitTime(100);
+                    cameraManager.setTorchMode(idCamera, false);
+                } else if (currentLetter == '－') {
+                    cameraManager.setTorchMode(idCamera, true);
+                    waitTime(300);
+                    cameraManager.setTorchMode(idCamera, false);
+                } else {
+                    waitTime(300);  //空白は0.3秒間待機
+                }
+                waitTime(100);  //各要素の間隔0.1秒
+            }
+        } catch (CameraAccessException e) {
+            tst.setText("err in flash");
+            tst.show();
+        }
     }
     /*音声再生メソッド*/
     public void playSound(){
         String morse = tvCrypt.getText().toString();
         int sampleRate = 8000;
         int hz = 720;
-        int duration = 16000;
+        int duration = 16000;   //大体1000msになる
 
         double[] shortSamples = new double[duration];
         short[] shortBuffer = new short[duration];
@@ -554,53 +632,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shortAudioTrack.write(shortBuffer, 0, shortBuffer.length);
 
         for (int i = 0; i < morse.length(); i++) {
+            if (stopPlay) break;
             char currentLetter = morse.charAt(i);
-            if(currentLetter == '･'){   //'・'なら0.1秒間再生
+            if (currentLetter == '･') {   //'・'なら0.1秒間再生
                 shortAudioTrack.play();
                 waitTime(100);
                 shortAudioTrack.stop();
-            }else if(currentLetter == '－'){
+            } else if (currentLetter == '－') {
                 shortAudioTrack.play(); //'－'なら0.3秒間再生
                 waitTime(300);
                 shortAudioTrack.stop();
-            }else{
+            } else {
                 waitTime(300);  //空白は0.3秒間待機
             }
             waitTime(100);  //各要素の間隔0.1秒
         }
     }
     /*モールス再生メソッド*/
-    public void playMorse(){
-        if(!isPlaying){
-            isPlaying = true;
-            Thread vibTh = new Thread(new Runnable() {
-                @Override
-                public void run() {
-//                    etStr.setText("ふる");
-                    playVibration();
-                }
-            });
-            Thread flashTh = new Thread(new Runnable() {
-                @Override
-                public void run() {
-//                    etStr.setText("ぴか");
-                    playFlash();
-                }
-            });
-            Thread soundTh = new Thread(new Runnable() {
-                @Override
-                public void run() {
-//                    etStr.setText("おと");
-                    playSound();
-                }
-            });
-            if (vibration)
-                vibTh.start();
-            if(flash)
-                flashTh.start();
-            if(volume)
-                soundTh.start();
-            isPlaying = false;
+    Thread vibTh, flashTh, soundTh;
+    public void playMorse() {
+        btPlay.setImageDrawable(getDrawable(R.drawable.stop));
+        vibTh = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                playVibration();
+            }
+        });
+        flashTh = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                playFlash();
+            }
+        });
+        soundTh = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                playSound();
+            }
+        });
+        if (vibration)
+            vibTh.start();
+        if (flash)
+            flashTh.start();
+        if (volume)
+            soundTh.start();
+        try {
+            vibTh.join();
+            flashTh.join();
+            soundTh.join();
+            stopPlay = false;
+            btPlay.setImageDrawable(getDrawable(R.drawable.play));
+            wg--;
+        } catch (InterruptedException e) {
+            tst.setText("err in playMorse");
+            tst.show();
         }
     }
 
@@ -628,7 +713,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setMode(mode);
             setLang(lang);
         }
-        String outPut(){ return this.crypt.toString(); }
+        String getCrypt(){ return this.crypt.toString(); }
         void encry(){ }
     }
 
@@ -660,7 +745,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         @Override
-        void encry(){
+        void encry() {
             crypt.setLength(0);     //暗号文の初期化
             char tmp = 0;
             int x = 0;
@@ -692,7 +777,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             index = 0;
                             index += x;
                         }
-                    crypt.append(listTable.get(index));
+                        crypt.append(listTable.get(index));
                     }              //対象でないならそのまま
                     else crypt.append(tmp);
                 }
@@ -710,7 +795,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             index = listTable.size() - 1;
                             index -= x;
                         }
-                    crypt.append(listTable.get(index));
+                        crypt.append(listTable.get(index));
                     }              //対象でないならそのまま
                     else crypt.append(tmp);
                 }
@@ -746,7 +831,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         }
         @Override
-        public void encry(){                    /*暗号化復号メソッド*/
+        public void encry() {                    /*暗号化復号メソッド*/
             crypt.setLength(0);
             char tmp;
 
@@ -782,7 +867,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 for(int i=0;  i < plainList.size(); i++)    //濁点、半濁点を前の文字と結合
                     if(i > 0 && (plainList.get(i).equals(sonant) || plainList.get(i).equals(pSound)))
-                            plainList.set(i - 1, plainList.get(i - 1) + " " + plainList.get(i));
+                        plainList.set(i - 1, plainList.get(i - 1) + " " + plainList.get(i));
 
                 for(String s : plainList){
                     itr = codeTable.entrySet().iterator();

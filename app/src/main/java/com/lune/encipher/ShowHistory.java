@@ -28,10 +28,8 @@ public class ShowHistory extends Activity{
 
         TextView tv = new TextView(this);
         tv.setLayoutParams(new ScrollView.LayoutParams(matchParent, wrapContent));
-        int i = 0;
 
         for(String str: strHistory){
-            i++;
             tv.append(str + "\n");
         }
         sv.addView(tv);

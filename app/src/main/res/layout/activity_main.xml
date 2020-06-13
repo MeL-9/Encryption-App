@@ -6,7 +6,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -240,11 +241,11 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/bt_put_space"
                         style="@style/etcPutButton"
-                        android:text="space"
-                        android:textSize="20sp" />
+                        android:scaleType="centerInside"
+                        android:src="@drawable/space" />
 
                     <LinearLayout
                         android:id="@+id/bt_two"
@@ -274,11 +275,11 @@
                         android:scaleType="centerInside"
                         android:src="@drawable/tontsu" />
 
-                    <Button
+                    <ImageButton
                         android:id="@+id/bt_bs"
                         style="@style/etcPutButton"
-                        android:text="@string/allow_left"
-                        android:textSize="30sp" />
+                        android:scaleType="centerInside"
+                        android:src="@drawable/backspace" />
 
                 </LinearLayout>
 
@@ -287,5 +288,14 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-9193312165134873/7847993525">
+    </com.google.android.gms.ads.AdView>
 
 </LinearLayout>

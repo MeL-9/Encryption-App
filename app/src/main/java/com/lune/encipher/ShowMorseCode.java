@@ -10,10 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.RadioButton;
 
-//import java.util.HashMap;
-//import java.util.Map;
-//import java.util.Iterator;
-
 public class ShowMorseCode extends Activity{
     private ScrollView sv;
     private LinearLayout llHead, llCont;
